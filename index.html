@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>MarsWatch</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <table class="main-table">
+        <tr>
+            <td class="parent-cell">
+                <div id="parent-time">00:00:00.00</div>
+                <button id="reset-button" onclick="resetAll()">Reset All</button>
+            </td>
+
+            <td class="children-cell">
+                <table class="grid-table">
+                    <tr>
+                        <td>
+                            <div id="card-0" class="child-card group-a">
+                                <div class="child-label">L1 US LB</div>
+                                <div id="time-0" class="time-display">00:00:00.00</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div id="card-1" class="child-card group-b">
+                                <div class="child-label">L2 EU LF</div>
+                                <div id="time-1" class="time-display">00:00:00.00</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div id="card-2" class="child-card group-b">
+                                <div class="child-label">L2 EU LB</div>
+                                <div id="time-2" class="time-display">00:00:00.00</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div id="card-3" class="child-card group-a">
+                                <div class="child-label">L1 US LF</div>
+                                <div id="time-3" class="time-display">00:00:00.00</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div id="card-4" class="child-card group-break">
+                                <div class="child-label">OTHER</div>
+                                <div id="time-4" class="time-display">00:00:00.00</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div id="card-5" class="child-card group-b">
+                                <div class="child-label">L2 US LF</div>
+                                <div id="time-5" class="time-display">00:00:00.00</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div id="card-6" class="child-card group-a">
+                                <div class="child-label">L1 EU LB</div>
+                                <div id="time-6" class="time-display">00:00:00.00</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div id="card-7" class="child-card group-a">
+                                <div class="child-label">L1 EU LF</div>
+                                <div id="time-7" class="time-display">00:00:00.00</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div id="card-8" class="child-card group-b">
+                                <div class="child-label">L2 US LB</div>
+                                <div id="time-8" class="time-display">00:00:00.00</div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

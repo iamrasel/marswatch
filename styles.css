@@ -1,0 +1,124 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+}
+
+body,
+html {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+.main-table {
+    width: 100%;
+    height: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.main-table td {
+    padding: 7px;
+    vertical-align: middle;
+}
+
+/* Parent Cell */
+.parent-cell {
+    width: 30%;
+    text-align: center;
+    height: 100%;
+}
+
+#parent-time {
+    color: #2F6B3F;
+    font-size: 3.4rem;
+    font-weight: bold;
+    margin-bottom: 30px;
+    width: 100%;
+}
+
+#reset-button {
+    padding: 16px;
+    font-size: 17px;
+    background: #C44A3A;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    width: 50%;
+    font-weight: bold;
+}
+
+/* Children Cell */
+.children-cell {
+    width: 70%;
+    height: 100%;
+}
+
+.grid-table {
+    width: 100%;
+    height: 100%;
+    border-collapse: collapse;
+}
+
+.grid-table td {
+    padding: 7px;
+}
+
+/* Child Cards */
+.child-card {
+    border: 3px dotted transparent;
+    border-radius: 15px;
+    padding: 15px 10px;
+    text-align: center;
+    cursor: pointer;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: all 0.4s;
+}
+
+.child-card:hover {
+    background: transparent;
+}
+
+/* Group Colors */
+.group-a {
+    background-color: #F3E3D0;
+}
+
+.group-b {
+    background-color: #D2C4B4;
+}
+
+.group-break {
+    background-color: #FEFDDF;
+}
+
+.child-label {
+    font-size: 1.15rem;
+    font-weight: bold;
+    margin-bottom: 7px;
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.time-display {
+    font-size: 2.2rem;
+    font-weight: bold;
+    padding: 18px 10px;
+    width: 100%;
+    min-height: 95px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.child-card.running {
+    border-color: #346739 !important;
+}
