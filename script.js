@@ -1,9 +1,3 @@
-const labels = [
-    "L1 US LB", "L2 EU LF", "L2 EU LB",
-    "L1 US LF", "OTHER", "L2 US LF",
-    "L1 EU LB", "L1 EU LF", "L2 US LB"
-];
-
 let children = [];
 let interval = null;
 let lastSaveTime = Date.now();
