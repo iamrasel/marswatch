@@ -1,63 +1,68 @@
 let children = [];
 let interval = null;
-let lastSaveTime = Date.now();
 
 // Load saved data
 function loadSavedData() {
     const saved = localStorage.getItem('marsStopwatches');
-    if (saved) {
-        try {
-            const data = JSON.parse(saved);
-            children = data.map(item => ({
-                elapsed: item.elapsed || 0,
-                startTime: item.isRunning ? Date.now() : null,   // Start counting from NOW
-                isRunning: item.isRunning || false
-            }));
-            return true;
-        } catch (e) {
-            console.error("Failed to load saved data");
-        }
+    if (!saved) return false;
+
+    try {
+        const data = JSON.parse(saved);
+        const now = Date.now();
+
+        children = data.map(item => {
+            let frozenElapsed = item.frozenElapsed || 0;
+            let startTimestamp = item.startTimestamp || null;
+            const wasRunning = item.isRunning === true;
+
+            if (wasRunning && startTimestamp) {
+                const realElapsed = now - startTimestamp;
+                frozenElapsed += realElapsed;
+                startTimestamp = now;
+            }
+
+            return {
+                frozenElapsed: Math.max(0, Math.floor(frozenElapsed)),
+                startTimestamp: wasRunning ? now : null,
+                isRunning: wasRunning
+            };
+        });
+        return true;
+    } catch (e) {
+        console.error("Failed to load saved data:", e);
+        return false;
     }
-    return false;
 }
 
 // Save current state
 function saveData() {
-    const dataToSave = children.map(child => {
-        let currentElapsed = child.elapsed;
-        if (child.isRunning && child.startTime) {
-            currentElapsed += (Date.now() - child.startTime);
-        }
-        return {
-            elapsed: currentElapsed,
-            isRunning: child.isRunning
-        };
-    });
+    const now = Date.now();
+    const dataToSave = children.map(child => ({
+        frozenElapsed: child.frozenElapsed || 0,
+        startTimestamp: child.isRunning ? child.startTimestamp : null,
+        isRunning: child.isRunning
+    }));
 
     localStorage.setItem('marsStopwatches', JSON.stringify(dataToSave));
-    lastSaveTime = Date.now();
 }
 
 function formatTime(ms) {
-    let totalCs = Math.floor(ms / 10);
-    let cs = totalCs % 100;
-    let totalSec = Math.floor(totalCs / 100);
-    let sec = totalSec % 60;
-    let min = Math.floor(totalSec / 60) % 60;
-    let hr = Math.floor(totalSec / 3600);
+    const totalCs = Math.floor(ms / 10);
+    const cs = totalCs % 100;
+    const totalSec = Math.floor(totalCs / 100);
+    const sec = totalSec % 60;
+    const min = Math.floor(totalSec / 60) % 60;
+    const hr = Math.floor(totalSec / 3600);
 
-    let hrStr = hr < 10 ? "0" + hr : hr;
-    let minStr = min < 10 ? "0" + min : min;
-    let secStr = sec < 10 ? "0" + sec : sec;
-    let csStr = cs < 10 ? "0" + cs : cs;
-
-    return hrStr + ":" + minStr + ":" + secStr + "." + csStr;
+    return `${hr < 10 ? '0' : ''}${hr}:${min < 10 ? '0' : ''}${min}:${sec < 10 ? '0' : ''}${sec}.${cs < 10 ? '0' : ''}${cs}`;
 }
 
 function getCurrentElapsed(index) {
     const c = children[index];
-    if (!c.isRunning || !c.startTime) return c.elapsed;
-    return c.elapsed + (Date.now() - c.startTime);
+    if (!c.isRunning || !c.startTimestamp) {
+        return c.frozenElapsed || 0;
+    }
+    return (c.frozenElapsed || 0) + (Date.now() - c.startTimestamp);
 }
 
 function updateAll() {
@@ -67,10 +72,10 @@ function updateAll() {
         const elapsed = getCurrentElapsed(i);
         totalMs += elapsed;
 
-        const timeEl = document.getElementById("time-" + i);
+        const timeEl = document.getElementById(`time-${i}`);
         if (timeEl) timeEl.textContent = formatTime(elapsed);
 
-        const card = document.getElementById("card-" + i);
+        const card = document.getElementById(`card-${i}`);
         if (card) card.classList.toggle("running", children[i].isRunning);
     }
 
@@ -85,20 +90,20 @@ function toggleChild(idx) {
     for (let i = 0; i < 9; i++) {
         if (i === idx) continue;
         const other = children[i];
-        if (other.isRunning && other.startTime) {
-            other.elapsed += (now - other.startTime);
+        if (other.isRunning && other.startTimestamp) {
+            other.frozenElapsed += (now - other.startTimestamp);
             other.isRunning = false;
-            other.startTime = null;
+            other.startTimestamp = null;
         }
     }
 
     // Toggle this child
     if (child.isRunning) {
-        child.elapsed += (now - child.startTime);
+        child.frozenElapsed += (now - child.startTimestamp);
         child.isRunning = false;
-        child.startTime = null;
+        child.startTimestamp = null;
     } else {
-        child.startTime = now;
+        child.startTimestamp = now;
         child.isRunning = true;
     }
 
@@ -110,9 +115,9 @@ function resetAll() {
     if (!confirm("Are you sure to reset all stopwatches?")) return;
 
     children.forEach(c => {
-        c.elapsed = 0;
+        c.frozenElapsed = 0;
         c.isRunning = false;
-        c.startTime = null;
+        c.startTimestamp = null;
     });
 
     localStorage.removeItem('marsStopwatches');
@@ -120,29 +125,30 @@ function resetAll() {
 }
 
 function init() {
-    const hasSavedData = loadSavedData();
+    const hasSaved = loadSavedData();
 
-    if (!hasSavedData) {
+    if (!hasSaved) {
         children = Array(9).fill().map(() => ({
-            elapsed: 0,
-            startTime: null,
+            frozenElapsed: 0,
+            startTimestamp: null,
             isRunning: false
         }));
     }
 
     // Attach click listeners
     for (let i = 0; i < 9; i++) {
-        const card = document.getElementById("card-" + i);
-        if (card) {
-            card.addEventListener("click", () => toggleChild(i));
-        }
+        const card = document.getElementById(`card-${i}`);
+        if (card) card.addEventListener("click", () => toggleChild(i));
     }
 
     updateAll();
     interval = setInterval(updateAll, 10);
 
-    // Auto-save every 3 seconds
-    setInterval(saveData, 3000);
+    // Auto-save every 5 seconds
+    setInterval(saveData, 5000);
+
+    // Save latest state just before refresh/close
+    window.addEventListener("beforeunload", saveData);
 }
 
 window.onload = init;
