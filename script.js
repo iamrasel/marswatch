@@ -67,6 +67,7 @@ function getCurrentElapsed(index) {
 
 function updateAll() {
     let totalMs = 0;
+    let anyRunning = false;
 
     for (let i = 0; i < 9; i++) {
         const elapsed = getCurrentElapsed(i);
@@ -77,9 +78,16 @@ function updateAll() {
 
         const card = document.getElementById(`card-${i}`);
         if (card) card.classList.toggle("running", children[i].isRunning);
+
+        if (children[i].isRunning) anyRunning = true;
     }
 
     document.getElementById("parent-time").textContent = formatTime(totalMs);
+
+    const pauseBtn = document.getElementById("pause-button");
+    if (pauseBtn) {
+        pauseBtn.style.display = anyRunning ? "inline-block" : "none";
+    }
 }
 
 function toggleChild(idx) {
@@ -124,6 +132,26 @@ function resetAll() {
     updateAll();
 }
 
+function pauseAll() {
+    const now = Date.now();
+    let wasRunning = false;
+
+    for (let i = 0; i < 9; i++) {
+        const child = children[i];
+        if (child.isRunning && child.startTimestamp) {
+            child.frozenElapsed += (now - child.startTimestamp);
+            child.isRunning = false;
+            child.startTimestamp = null;
+            wasRunning = true;
+        }
+    }
+
+    if (wasRunning) {
+        saveData();
+        updateAll();
+    }
+}
+
 function init() {
     const hasSaved = loadSavedData();
 
@@ -144,10 +172,7 @@ function init() {
     updateAll();
     interval = setInterval(updateAll, 10);
 
-    // Auto-save every 5 seconds
     setInterval(saveData, 5000);
-
-    // Save latest state just before refresh/close
     window.addEventListener("beforeunload", saveData);
 }
 
