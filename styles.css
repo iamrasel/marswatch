@@ -5,8 +5,7 @@
     user-select: none;
 }
 
-body,
-html {
+body, html {
     height: 100%;
     width: 100%;
     overflow: hidden;
@@ -39,29 +38,40 @@ html {
     width: 100%;
 }
 
-#reset-button {
-    padding: 16px;
+.button-container {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+#reset-button, #pause-button {
+    padding: 16px 24px;
     font-size: 17px;
-    background: #C44A3A;
     color: white;
     border: none;
     border-radius: 10px;
     cursor: pointer;
-    width: 30%;
     font-weight: bold;
+    flex: 1;
+    max-width: 180px;
+}
+
+#reset-button {
+    background: #C44A3A;
+}
+
+#reset-button:hover {
+    background: #a53b2e;
 }
 
 #pause-button {
-    padding: 16px;
-    font-size: 17px;
     background: #E67E22;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: bold;
-    width: 30%;
     display: none;
+}
+
+#pause-button:hover {
+    background: #d35400;
 }
 
 /* Children Cell */
@@ -99,17 +109,9 @@ html {
 }
 
 /* Group Colors */
-.group-a {
-    background-color: #F3E3D0;
-}
-
-.group-b {
-    background-color: #D2C4B4;
-}
-
-.group-break {
-    background-color: #FEFDDF;
-}
+.group-a { background-color: #F3E3D0; }
+.group-b { background-color: #D2C4B4; }
+.group-break { background-color: #FEFDDF; }
 
 .child-label {
     font-size: 1.15rem;
