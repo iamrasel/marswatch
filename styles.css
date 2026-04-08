@@ -9,6 +9,12 @@ body, html {
     height: 100%;
     width: 100%;
     overflow: hidden;
+    transition: background-color 0.4s, color 0.2s;
+}
+
+body {
+    background-color: #DFD3C3;
+    color: #37353E;
 }
 
 .main-table {
@@ -23,61 +29,77 @@ body, html {
     vertical-align: middle;
 }
 
-/* Parent Cell */
+
 .parent-cell {
     width: 35%;
-    text-align: center;
     height: 100%;
+    position: relative;
+    text-align: center;
+    padding: 25px 30px;
 }
 
 #parent-time {
-    color: #2F6B3F;
+    color: #3E5F44;
     font-size: 3.4rem;
     font-weight: bold;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
     width: 100%;
 }
 
 .button-container {
     display: flex;
-    gap: 15px;
+    gap: 18px;
     justify-content: center;
-    margin-top: 20px;
 }
 
 #reset-button, #pause-button {
-    padding: 16px 24px;
+    max-width: 160px;
+    padding: 16px;
     font-size: 17px;
-    color: white;
-    border: none;
+    color: #37353E;
+    background: transparent;
+    border: 1px solid #37353E;
     border-radius: 10px;
     cursor: pointer;
     font-weight: bold;
     flex: 1;
-    max-width: 180px;
+    transition: all 0.3s;
 }
 
-#reset-button {
-    background: #C44A3A;
+#pause-button { display: none; }
+
+#theme-toggle {
+    color: #37353E;
+    position: absolute;
+    top: 24px;
+    right: 16px;
+    background: transparent;
+    font-size: 18px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.4s;
+    text-shadow: 3px 3px 8px #37353E80;
 }
 
-#reset-button:hover {
-    background: #a53b2e;
-}
-
-#pause-button {
-    background: #E67E22;
-    display: none;
-}
-
+#reset-button:hover,
 #pause-button:hover {
-    background: #d35400;
+    color: #DFD3C3;
+    border: none;
+    transform: scale(0.94);
 }
 
-/* Children Cell */
-.children-cell {
-    width: 65%;
-    height: 100%;
+#reset-button:hover { background: #DC2525; }
+#pause-button:hover { background: #3E5F44; }
+#theme-toggle:hover { transform: scale(1.50); }
+
+
+.children-cell { 
+    width: 65%; 
+    height: 100%; 
 }
 
 .grid-table {
@@ -86,13 +108,11 @@ body, html {
     border-collapse: collapse;
 }
 
-.grid-table td {
-    padding: 7px;
+.grid-table td { 
+    padding: 7px; 
 }
 
-/* Child Cards */
 .child-card {
-    border: 3px dotted transparent;
     border-radius: 15px;
     padding: 15px 10px;
     text-align: center;
@@ -102,16 +122,14 @@ body, html {
     flex-direction: column;
     justify-content: center;
     transition: all 0.4s;
+    box-shadow: 1px 1px #37353e4d;
 }
 
-.child-card:hover {
-    background: transparent;
-}
+.child-card:hover { transform: scale(1.03); }
 
-/* Group Colors */
-.group-a { background-color: #F3E3D0; }
-.group-b { background-color: #D2C4B4; }
-.group-break { background-color: #FEFDDF; }
+.group-a { background-color: #D5C7A3; }
+.group-b { background-color: #BDB395; }
+.group-break { background-color: #f2e2b180; }
 
 .child-label {
     font-size: 1.15rem;
@@ -135,5 +153,51 @@ body, html {
 }
 
 .child-card.running {
-    border-color: #346739 !important;
+    color: #3E5F44;
+    background: transparent;
+    transform: scale(1.20);
+    box-shadow: none;
+}
+
+/* Dark Mode */
+body.dark {
+    background-color: #1A1A1D;
+    color: #D3DAD9;
+}
+
+body.dark #parent-time { color: #4ade80; }
+
+body.dark #reset-button,
+body.dark #pause-button {
+    background: transparent;
+    color: #D3DAD9;
+    border: 1px solid #D3DAD9;
+}
+
+body.dark #theme-toggle {
+    color: #D3DAD9;
+    text-shadow: 3px 3px 8px #d3dad980;
+}
+
+body.dark #reset-button:hover,
+body.dark #pause-button:hover {
+    color: #1A1A1D;
+    border: none;
+}
+
+body.dark #reset-button:hover { background: #DC2525; }
+body.dark #pause-button:hover { background: #4ade80; }
+
+body.dark .child-card {
+    box-shadow: 1px 1px black;
+}
+
+body.dark .group-a { background-color: #31363F; }
+body.dark .group-b { background-color: #222831; }
+body.dark .group-break { background-color: #34495580; }
+
+body.dark .child-card.running {
+    color: #4ade80;
+    background: transparent;
+    box-shadow: none;
 }

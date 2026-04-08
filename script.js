@@ -152,6 +152,29 @@ function pauseAll() {
     }
 }
 
+function toggleTheme() {
+    document.body.classList.toggle('dark');
+    
+    const isDark = document.body.classList.contains('dark');
+    const toggleBtn = document.getElementById('theme-toggle');
+    
+    toggleBtn.textContent = isDark ? '☀️' : '🌙';
+    
+    localStorage.setItem('marsWatchTheme', isDark ? 'dark' : 'light');
+}
+
+function loadTheme() {
+    const savedTheme = localStorage.getItem('marsWatchTheme');
+    const toggleBtn = document.getElementById('theme-toggle');
+    
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark');
+        if (toggleBtn) toggleBtn.textContent = '☀️';
+    } else {
+        if (toggleBtn) toggleBtn.textContent = '🌙';
+    }
+}
+
 function init() {
     const hasSaved = loadSavedData();
 
@@ -163,12 +186,12 @@ function init() {
         }));
     }
 
-    // Attach click listeners
     for (let i = 0; i < 9; i++) {
         const card = document.getElementById(`card-${i}`);
         if (card) card.addEventListener("click", () => toggleChild(i));
     }
 
+    loadTheme();
     updateAll();
     interval = setInterval(updateAll, 10);
 
