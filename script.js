@@ -1,7 +1,6 @@
 let children = [];
 let interval = null;
 
-// Load saved data
 function loadSavedData() {
     const saved = localStorage.getItem('marsStopwatches');
     if (!saved) return false;
@@ -34,7 +33,6 @@ function loadSavedData() {
     }
 }
 
-// Save current state
 function saveData() {
     const now = Date.now();
     const dataToSave = children.map(child => ({
@@ -119,19 +117,6 @@ function toggleChild(idx) {
     updateAll();
 }
 
-function resetAll() {
-    if (!confirm("Are you sure to reset all stopwatches?")) return;
-
-    children.forEach(c => {
-        c.frozenElapsed = 0;
-        c.isRunning = false;
-        c.startTimestamp = null;
-    });
-
-    localStorage.removeItem('marsStopwatches');
-    updateAll();
-}
-
 function pauseAll() {
     const now = Date.now();
     let wasRunning = false;
@@ -150,6 +135,19 @@ function pauseAll() {
         saveData();
         updateAll();
     }
+}
+
+function resetAll() {
+    if (!confirm("Are you sure to reset all stopwatches?")) return;
+
+    children.forEach(c => {
+        c.frozenElapsed = 0;
+        c.isRunning = false;
+        c.startTimestamp = null;
+    });
+
+    localStorage.removeItem('marsStopwatches');
+    updateAll();
 }
 
 function toggleTheme() {
