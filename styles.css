@@ -94,10 +94,93 @@ body {
 #pause-button:hover { background: #3E5F44; }
 #reset-button:hover { background: #C44A3A; }
 
+.ot-switch-container {
+    position: absolute;
+    bottom: 24px;
+    left: 24px;
+    box-sizing: border-box;
+}
+
+.ot-switch-container input[type="checkbox"] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    opacity: 0;
+}
+
+.ot-switch-container label {
+    position: relative;
+    display: flex;
+    box-sizing: border-box;
+}
+
+.ot-switch-container label:before {
+    content: "";
+    width: 24px;
+    height: 14px;
+    background: #C44A3A;
+    background-size: 14px;
+    border-radius: 50%;
+    display: inline-block;
+    transition: all 0.3s ease-in;
+    box-shadow: 3px 3px 8px #37353E80;
+}
+
+.ot-switch-container label:after {
+    content: "";
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border: 3px solid white;
+    border-radius: 50%;
+    left: 0;
+    bottom: 0;
+    background: #C44A3A;
+    box-sizing: border-box;
+    transition: all 0.3s ease-in;
+}
+
+.ot-switch-container input[type="checkbox"]:checked + label:before {
+    background: #3E5F44;
+}
+
+.ot-switch-container input[type="checkbox"]:checked + label:after {
+    left: 10px;
+    background: #3E5F44;
+}
+
+.ot-amount {
+    position: absolute;
+    bottom: 18px;
+    left: 58px;
+    font-size: 1rem;
+    color: #37353E;
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.3s, transform 0.3s;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.ot-amount.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
 .data-button-container {
     position: absolute;
     bottom: 24px;
     right: 16px;
+}
+
+.data-button-container svg {
+    width: 20px;
+    height: 20px;
+    fill: #37353E;
 }
 
 #copy-button, #paste-button {
@@ -109,12 +192,6 @@ body {
 }
 
 #paste-button { margin-left: 10px; }
-
-.data-button-container svg {
-    width: 20px;
-    height: 20px;
-    fill: #37353E;
-}
 
 #copy-button:hover, #paste-button:hover {
     transform: scale(1.50);
@@ -235,6 +312,18 @@ body.dark #reset-button:hover {
 
 body.dark #pause-button:hover { background: #4ade80; }
 body.dark #reset-button:hover { background: #DC2525; }
+
+body.dark .ot-switch-container label:before,
+body.dark .ot-switch-container label:after {
+    background: #DC2525;
+}
+
+body.dark .ot-switch-container input[type="checkbox"]:checked + label:before,
+body.dark .ot-switch-container input[type="checkbox"]:checked + label:after {
+    background: #4ade80;
+}
+
+body.dark .ot-amount { color: #D3DAD9; }
 
 body.dark .data-button-container svg { fill: #D3DAD9; }
 

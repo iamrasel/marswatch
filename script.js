@@ -1,6 +1,11 @@
 let children = [];
 let interval = null;
 
+const TAKA_PER_MS = 250 / (60 * 60 * 1000);
+let otMode = false;
+let otFrozenMs = 0;
+let otStartParentMs = 0;
+
 function loadSavedData() {
     const saved = localStorage.getItem('marsStopwatches');
     if (!saved) return false;
@@ -26,6 +31,13 @@ function loadSavedData() {
                 isRunning: wasRunning
             };
         });
+
+        if (data[0] && data[0]._ot !== undefined) {
+            otFrozenMs = data[0]._ot.frozenMs || 0;
+            otStartParentMs = data[0]._ot.startParentMs || 0;
+            otMode = data[0]._ot.mode === true;
+        }
+
         return true;
     } catch (e) {
         console.error("Failed to load saved data:", e);
@@ -35,11 +47,18 @@ function loadSavedData() {
 
 function saveData() {
     const now = Date.now();
-    const dataToSave = children.map(child => ({
-        frozenElapsed: child.frozenElapsed || 0,
-        startTimestamp: child.isRunning ? child.startTimestamp : null,
-        isRunning: child.isRunning
-    }));
+    const dataToSave = children.map((child, i) => {
+        const entry = {
+            frozenElapsed: child.frozenElapsed || 0,
+            startTimestamp: child.isRunning ? child.startTimestamp : null,
+            isRunning: child.isRunning
+        };
+
+        if (i === 0) {
+            entry._ot = { frozenMs: otFrozenMs, startParentMs: otStartParentMs, mode: otMode };
+        }
+        return entry;
+    });
 
     localStorage.setItem('marsStopwatches', JSON.stringify(dataToSave));
 }
@@ -85,6 +104,28 @@ function updateAll() {
     const pauseBtn = document.getElementById("pause-button");
     if (pauseBtn) {
         pauseBtn.style.display = anyRunning ? "inline-block" : "none";
+    }
+
+    const otAmount = otMode
+        ? (otFrozenMs + (totalMs - otStartParentMs)) * TAKA_PER_MS
+        : otFrozenMs * TAKA_PER_MS;
+    updateOTDisplay(otAmount);
+}
+
+function getOTAmount(totalMs) {
+    return otMode
+        ? (otFrozenMs + (totalMs - otStartParentMs)) * TAKA_PER_MS
+        : otFrozenMs * TAKA_PER_MS;
+}
+
+function updateOTDisplay(otAmount) {
+    const el = document.getElementById("ot-amount");
+    if (!el) return;
+    if (otAmount > 0 || otMode) {
+        el.textContent = "৳ " + otAmount.toFixed(2);
+        el.classList.add("visible");
+    } else {
+        el.classList.remove("visible");
     }
 }
 
@@ -145,6 +186,9 @@ function resetAll() {
         c.isRunning = false;
         c.startTimestamp = null;
     });
+
+    otFrozenMs = 0;
+    otStartParentMs = 0;
 
     localStorage.removeItem('marsStopwatches');
     updateAll();
@@ -207,7 +251,7 @@ function copyData() {
         startTimestamp: null
     }));
 
-    const json = JSON.stringify(payload, null, 2);
+    const json = JSON.stringify({ entries: payload, _ot: { frozenMs: otFrozenMs, startParentMs: otStartParentMs, mode: otMode } }, null, 2);
 
     navigator.clipboard.writeText(json)
         .then(() => showToast("✓ Copied to clipboard"))
@@ -239,14 +283,17 @@ function applyPastedJSON(text) {
     try {
         const data = JSON.parse(text.trim());
 
-        if (!Array.isArray(data) || data.length !== 9) {
+        const entries = Array.isArray(data) ? data : (Array.isArray(data.entries) ? data.entries : []);
+        const otData = Array.isArray(data) ? null : data._ot;
+
+        if (entries.length !== 9) {
             showToast("✗ Corrupted data: expected 9 entries", true);
             return;
         }
 
         const now = Date.now();
 
-        children = data.map(item => {
+        children = entries.map(item => {
             const frozenElapsed = typeof item.frozenElapsed === 'number'
                 ? Math.max(0, Math.floor(item.frozenElapsed))
                 : 0;
@@ -257,6 +304,19 @@ function applyPastedJSON(text) {
                 isRunning: wasRunning
             };
         });
+
+        if (otData) {
+            otFrozenMs = typeof otData.frozenMs === 'number' ? otData.frozenMs : 0;
+            otStartParentMs = typeof otData.startParentMs === 'number' ? otData.startParentMs : 0;
+            otMode = otData.mode === true;
+        } else {
+            otFrozenMs = 0;
+            otStartParentMs = 0;
+            otMode = false;
+        }
+
+        const cb = document.getElementById('ot-checkbox');
+        if (cb) cb.checked = otMode;
 
         saveData();
         updateAll();
@@ -280,6 +340,23 @@ function init() {
     for (let i = 0; i < 9; i++) {
         const card = document.getElementById(`card-${i}`);
         if (card) card.addEventListener("click", () => toggleChild(i));
+    }
+
+    const otCheckbox = document.getElementById('ot-checkbox');
+    if (otCheckbox) {
+        otCheckbox.checked = otMode;
+        otCheckbox.addEventListener('change', () => {
+            const totalMs = children.reduce((sum, _, i) => sum + getCurrentElapsed(i), 0);
+            if (otCheckbox.checked) {
+                otStartParentMs = totalMs;
+                otMode = true;
+            } else {
+                otFrozenMs += (totalMs - otStartParentMs);
+                otMode = false;
+            }
+            saveData();
+            updateAll();
+        });
     }
 
     loadTheme();
