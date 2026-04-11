@@ -175,6 +175,99 @@ function loadTheme() {
     }
 }
 
+function showToast(message, isError = false) {
+    let toast = document.getElementById('mars-toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'mars-toast';
+        document.body.appendChild(toast);
+    }
+
+    toast.textContent = message;
+    toast.className = 'visibility' + (isError ? ' error' : '');
+
+    clearTimeout(toast._hideTimer);
+    toast._hideTimer = setTimeout(() => {
+        toast.className = '';
+    }, 2200);
+}
+
+function copyData() {
+    pauseAll();
+
+    const labels = [
+        "L1 US LB", "L2 EU LF", "L2 EU LB",
+        "L1 US LF", "OTHER",    "L2 US LF",
+        "L1 EU LB", "L1 EU LF", "L2 US LB"
+    ];
+
+    const payload = children.map((c, i) => ({
+        index: i,
+        label: labels[i],
+        frozenElapsed: c.frozenElapsed || 0,
+        isRunning: false,
+        startTimestamp: null
+    }));
+
+    const json = JSON.stringify(payload, null, 2);
+
+    navigator.clipboard.writeText(json)
+        .then(() => showToast("✓ Copied to clipboard"))
+        .catch(() => {
+            // Fallback for browsers that block clipboard API
+            const ta = document.createElement('textarea');
+            ta.value = json;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            showToast("✓ Copied to clipboard");
+        });
+}
+
+function pasteData() {
+    navigator.clipboard.readText()
+        .then(text => applyPastedJSON(text))
+        .catch(() => {
+            // Fallback: prompt the user to paste manually
+            const text = prompt("Paste your MarsWatch JSON data here:");
+            if (text) applyPastedJSON(text);
+        });
+}
+
+function applyPastedJSON(text) {
+    try {
+        const data = JSON.parse(text.trim());
+
+        if (!Array.isArray(data) || data.length !== 9) {
+            showToast("✗ Corrupted data: expected 9 entries", true);
+            return;
+        }
+
+        const now = Date.now();
+
+        children = data.map(item => {
+            const frozenElapsed = typeof item.frozenElapsed === 'number'
+                ? Math.max(0, Math.floor(item.frozenElapsed))
+                : 0;
+            const wasRunning = item.isRunning === true;
+            return {
+                frozenElapsed,
+                startTimestamp: wasRunning ? now : null,
+                isRunning: wasRunning
+            };
+        });
+
+        saveData();
+        updateAll();
+        showToast("✓ Data imported");
+    } catch (e) {
+        showToast("✗ Invalid JSON", true);
+    }
+}
+
 function init() {
     const hasSaved = loadSavedData();
 

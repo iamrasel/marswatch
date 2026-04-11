@@ -159,6 +159,36 @@ body {
     box-shadow: none;
 }
 
+.data-button-container {
+    position: absolute;
+    bottom: 24px;
+    right: 16px;
+}
+
+#copy-button, #paste-button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+}
+
+#paste-button { margin-left: 10px; }
+
+.icon-buttons {
+    width: 20px;
+    height: 20px;
+    fill: #37353E;
+}
+
+#copy-button:hover, #paste-button:hover {
+    transform: scale(1.50);
+}
+
+body.dark .icon-buttons {
+    fill: #D3DAD9;
+}
+
 /* Dark Mode */
 body.dark {
     background-color: #1A1A1D;
@@ -200,4 +230,41 @@ body.dark .child-card.running {
     color: #4ade80;
     background: transparent;
     box-shadow: none;
+}
+
+#mars-toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(16px);
+    background: #3E5F44;
+    color: #DFD3C3;
+    padding: 10px 22px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: bold;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s, transform 0.25s;
+    z-index: 9999;
+    white-space: nowrap;
+}
+
+#mars-toast.visibility {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+#mars-toast.error {
+    background: #C44A3A;
+}
+
+body.dark #mars-toast {
+    background: #4ade80;
+    color: #1A1A1D;
+}
+
+body.dark #mars-toast.error {
+    background: #DC2525;
+    color: #1A1A1D;
 }
