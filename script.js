@@ -112,16 +112,10 @@ function updateAll() {
     updateOTDisplay(otAmount);
 }
 
-function getOTAmount(totalMs) {
-    return otMode
-        ? (otFrozenMs + (totalMs - otStartParentMs)) * TAKA_PER_MS
-        : otFrozenMs * TAKA_PER_MS;
-}
-
 function updateOTDisplay(otAmount) {
     const el = document.getElementById("ot-amount");
     if (!el) return;
-    if (otAmount > 0 || otMode) {
+    if (otMode) {
         el.textContent = "৳ " + otAmount.toFixed(2);
         el.classList.add("visible");
     } else {

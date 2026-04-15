@@ -155,7 +155,7 @@ body {
 
 .ot-amount {
     position: absolute;
-    bottom: 18px;
+    bottom: 20px;
     left: 58px;
     font-size: 1rem;
     color: #37353E;
@@ -292,7 +292,6 @@ body.dark {
 
 body.dark #theme-toggle {
     color: #D3DAD9;
-    text-shadow: 3px 3px 8px #d3dad980;
 }
 
 body.dark #parent-time { color: #4ade80; }
