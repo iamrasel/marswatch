@@ -1,80 +1,126 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>MarsWatch</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <div class="main-layout">
-        <div class="parent-cell">
-            <button id="theme-toggle" onclick="toggleTheme()" title="Toggle between day-night theme.">☀️</button>
 
-            <div id="parent-time">00:00:00.00</div>
-
-            <div class="button-container">
-                <button id="pause-button" onclick="pauseAll()">Pause</button>
-                <button id="reset-button" onclick="resetAll()">Reset</button>
+<body class="dark">
+    <main class="main">
+        <div class="card-grid">
+            <div id="card-0" class="card group-a"><span class="group-badge">L1</span>
+                <div class="dot"></div>
+                <div class="card-label">US Look Back</div>
+                <div id="time-0" class="card-time">00:00:00.00</div>
             </div>
-
-            <div class="ot-switch-container">
-                <input type="checkbox" id="ot-checkbox" title="Switch on/off OT mode."/>
-                <label></label>
+            <div id="card-1" class="card group-b"><span class="group-badge">L2</span>
+                <div class="dot"></div>
+                <div class="card-label">EU Look Forward</div>
+                <div id="time-1" class="card-time">00:00:00.00</div>
             </div>
-            <div id="ot-amount" class="ot-amount"></div>
-
-            <div class="data-button-container">
-                <button id="copy-button" onclick="copyData()" title="Copy JSON data, paste this to your new session to continue.">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M362.31-260Q332-260 311-281q-21-21-21-51.31v-455.38Q290-818 311-839q21-21 51.31-21h335.38Q728-860 749-839q21 21 21 51.31v455.38Q770-302 749-281q-21 21-51.31 21H362.31Zm0-60h335.38q4.62 0 8.46-3.85 3.85-3.84 3.85-8.46v-455.38q0-4.62-3.85-8.46-3.84-3.85-8.46-3.85H362.31q-4.62 0-8.46 3.85-3.85 3.84-3.85 8.46v455.38q0 4.62 3.85 8.46 3.84 3.85 8.46 3.85Zm-140 200Q192-120 171-141q-21-21-21-51.31v-515.38h60v515.38q0 4.62 3.85 8.46 3.84 3.85 8.46 3.85h395.38v60H222.31ZM350-320v-480 480Z"/></svg>
-                </button>
-                <button id="paste-button" onclick="pasteData()" title="Paste previously copied JSON data to continue where you left off.">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M212.31-140q-29.92 0-51.12-21.19Q140-182.39 140-212.31v-535.38q0-29.92 21.19-51.12Q182.39-820 212.31-820h176.23q8.31-29.23 33.96-48.46t57.5-19.23q33.08 0 58.42 19.23 25.35 19.23 33.66 48.46h175.61q29.92 0 51.12 21.19Q820-777.61 820-747.69v535.38q0 29.92-21.19 51.12Q777.61-140 747.69-140H212.31Zm0-60h535.38q4.62 0 8.46-3.85 3.85-3.84 3.85-8.46v-535.38q0-4.62-3.85-8.46-3.84-3.85-8.46-3.85H660v104.61H300V-760h-87.69q-4.62 0-8.46 3.85-3.85 3.84-3.85 8.46v535.38q0 4.62 3.85 8.46 3.84 3.85 8.46 3.85Zm293.5-565.73q10.34-10.35 10.34-25.81 0-15.46-10.34-25.81-10.35-10.34-25.81-10.34-15.46 0-25.81 10.34-10.34 10.35-10.34 25.81 0 15.46 10.34 25.81 10.35 10.35 25.81 10.35 15.46 0 25.81-10.35Z"/></svg>
-                </button>
+            <div id="card-2" class="card group-b"><span class="group-badge">L2</span>
+                <div class="dot"></div>
+                <div class="card-label">EU Look Back</div>
+                <div id="time-2" class="card-time">00:00:00.00</div>
             </div>
-        </div>
-
-        <div class="children-cell">
-            <div class="card-grid">
-                <div id="card-0" class="child-card group-a">
-                    <div class="child-label">L1 US LB</div>
-                    <div id="time-0" class="time-display">00:00:00.00</div>
-                </div>
-                <div id="card-1" class="child-card group-b">
-                    <div class="child-label">L2 EU LF</div>
-                    <div id="time-1" class="time-display">00:00:00.00</div>
-                </div>
-                <div id="card-2" class="child-card group-b">
-                    <div class="child-label">L2 EU LB</div>
-                    <div id="time-2" class="time-display">00:00:00.00</div>
-                </div>
-                <div id="card-3" class="child-card group-a">
-                    <div class="child-label">L1 US LF</div>
-                    <div id="time-3" class="time-display">00:00:00.00</div>
-                </div>
-                <div id="card-4" class="child-card group-break">
-                    <div class="child-label">OTHER</div>
-                    <div id="time-4" class="time-display">00:00:00.00</div>
-                </div>
-                <div id="card-5" class="child-card group-b">
-                    <div class="child-label">L2 US LF</div>
-                    <div id="time-5" class="time-display">00:00:00.00</div>
-                </div>
-                <div id="card-6" class="child-card group-a">
-                    <div class="child-label">L1 EU LB</div>
-                    <div id="time-6" class="time-display">00:00:00.00</div>
-                </div>
-                <div id="card-7" class="child-card group-a">
-                    <div class="child-label">L1 EU LF</div>
-                    <div id="time-7" class="time-display">00:00:00.00</div>
-                </div>
-                <div id="card-8" class="child-card group-b">
-                    <div class="child-label">L2 US LB</div>
-                    <div id="time-8" class="time-display">00:00:00.00</div>
-                </div>
+            <div id="card-3" class="card group-a"><span class="group-badge">L1</span>
+                <div class="dot"></div>
+                <div class="card-label">US Look Forward</div>
+                <div id="time-3" class="card-time">00:00:00.00</div>
+            </div>
+            <div id="card-4" class="card group-other">
+                <div class="dot"></div>
+                <div class="card-label">Other</div>
+                <div id="time-4" class="card-time">00:00:00.00</div>
+            </div>
+            <div id="card-5" class="card group-b"><span class="group-badge">L2</span>
+                <div class="dot"></div>
+                <div class="card-label">US Look Forward</div>
+                <div id="time-5" class="card-time">00:00:00.00</div>
+            </div>
+            <div id="card-6" class="card group-a"><span class="group-badge">L1</span>
+                <div class="dot"></div>
+                <div class="card-label">EU Look Back</div>
+                <div id="time-6" class="card-time">00:00:00.00</div>
+            </div>
+            <div id="card-7" class="card group-a"><span class="group-badge">L1</span>
+                <div class="dot"></div>
+                <div class="card-label">EU Look Forward</div>
+                <div id="time-7" class="card-time">00:00:00.00</div>
+            </div>
+            <div id="card-8" class="card group-b"><span class="group-badge">L2</span>
+                <div class="dot"></div>
+                <div class="card-label">US Look Back</div>
+                <div id="time-8" class="card-time">00:00:00.00</div>
             </div>
         </div>
-    </div>
+    </main>
+
+    <aside class="rail-right">
+        <div class="rail-header">
+            <div class="logo">MARS<br>WATCH</div>
+            <button class="theme-btn" id="themeToggle" title="Switch theme">
+                <svg class="sun-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <circle cx="12" cy="12" r="5" />
+                    <path
+                        d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+                </svg>
+                <svg class="moon-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="total-block">
+            <div class="total-time" id="parent-time">00:00:00.00</div>
+            <div class="total-label">Total Achieved</div>
+        </div>
+
+        <div class="ot-block" id="ot-block">
+            <label class="switch">
+                <input type="checkbox" id="ot-checkbox">
+                <span class="switch-track"></span>
+            </label>
+            <div class="ot-value" id="ot-value">OT Mode</div>
+        </div>
+
+        <div class="rail-controls">
+            <button class="rail-btn" id="action-btn" onclick="handleActionButton()">
+                <svg viewBox="0 -960 960 960" width="14" height="14">
+                    <path d="M560-200v-560h160v560H560Zm-320 0v-560h160v560H240Z" />
+                </svg>
+                <span id="action-btn-text">Pause</span>
+            </button>
+            <button class="rail-btn" onclick="copyData()">
+                <svg viewBox="0 -960 960 960" width="14" height="14">
+                    <path
+                        d="M362.31-260Q332-260 311-281q-21-21-21-51.31v-455.38Q290-818 311-839q21-21 51.31-21h335.38Q728-860 749-839q21 21 21 51.31v455.38Q770-302 749-281q-21 21-51.31 21H362.31Z" />
+                </svg>
+                Copy Backup
+            </button>
+            <button class="rail-btn" onclick="pasteData()">
+                <svg viewBox="0 -960 960 960" width="14" height="14">
+                    <path
+                        d="M212.31-140q-29.92 0-51.12-21.19Q140-182.39 140-212.31v-535.38q0-29.92 21.19-51.12Q182.39-820 212.31-820h176.23q8.31-29.23 33.96-48.46t57.5-19.23q33.08 0 58.42 19.23 25.35 19.23 33.66 48.46h175.61q29.92 0 51.12 21.19Q820-777.61 820-747.69v535.38q0 29.92-21.19 51.12Q777.61-140 747.69-140H212.31Z" />
+                </svg>
+                Paste Backup
+            </button>
+        </div>
+
+        <div class="rail-footer">
+            <span class="date-label" id="date-label"></span>
+        </div>
+    </aside>
+
+    <div id="mars-toast"></div>
 
     <script src="script.js"></script>
 </body>
+
 </html>
