@@ -4,12 +4,14 @@ let otMode = false;
 let otFrozenMs = 0;
 let otStartParentMs = 0;
 
-const LABELS = ["uslb1", "eulf2", "eulb2", "uslf1", "other", "uslf2", "eulb1", "eulf1", "uslb2"];
-const LABELS_STRINGS = [
-    "US Look Back", "EU Look Forward", "EU Look Back", "US Look Forward", "OTHER",
-    "US Look Forward", "EU Look Back", "EU Look Forward", "US Look Back"
+const DEFAULT_LABELS = [
+    "US Look Back", "US Look Forward", "EU Look Back", "EU Look Forward",
+    "Break", "Custom One", "Custom Two", "Other",
+    "US Look Back", "US Look Forward", "EU Look Back", "EU Look Forward"
 ];
-const GROUP_BADGES = ["L1", "L2", "L2", "L1", "", "L2", "L1", "L1", "L2"];
+const GROUP_BADGES = ["L1", "L1", "L1", "L1", "", "", "", "", "L2", "L2", "L2", "L2"];
+const CARD_COUNT = 12;
+const CUSTOM_INDICES = [5, 6];
 
 // ── STORAGE ──
 function loadSavedData() {
@@ -18,16 +20,26 @@ function loadSavedData() {
     try {
         const data = JSON.parse(saved);
         const now = Date.now();
-        children = data.map(item => {
+        children = data.map((item, i) => {
             let frozenElapsed = item.frozenElapsed || 0;
             const wasRunning = item.isRunning === true;
             if (wasRunning && item.startTimestamp) frozenElapsed += now - item.startTimestamp;
             return {
                 frozenElapsed: Math.max(0, Math.floor(frozenElapsed)),
                 startTimestamp: wasRunning ? now : null,
-                isRunning: wasRunning
+                isRunning: wasRunning,
+                customLabel: CUSTOM_INDICES.includes(i) ? (item.customLabel || DEFAULT_LABELS[i]) : undefined
             };
         });
+        while (children.length < CARD_COUNT) {
+            const i = children.length;
+            children.push({ 
+                frozenElapsed: 0, 
+                startTimestamp: null, 
+                isRunning: false,
+                customLabel: CUSTOM_INDICES.includes(i) ? DEFAULT_LABELS[i] : undefined
+            });
+        }
         if (data[0]?._ot !== undefined) {
             otFrozenMs = data[0]._ot.frozenMs || 0;
             otStartParentMs = data[0]._ot.startParentMs || 0;
@@ -46,6 +58,9 @@ function saveData() {
             startTimestamp: c.isRunning ? c.startTimestamp : null,
             isRunning: c.isRunning
         };
+        if (CUSTOM_INDICES.includes(i) && c.customLabel && c.customLabel !== DEFAULT_LABELS[i]) {
+            e.customLabel = c.customLabel;
+        }
         if (i === 0) e._ot = { frozenMs: otFrozenMs, startParentMs: otStartParentMs, mode: otMode };
         return e;
     });
@@ -74,7 +89,7 @@ function updateAll() {
     let totalMs = 0;
     let anyRunning = false;
 
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < CARD_COUNT; i++) {
         const elapsed = getCurrentElapsed(i);
         totalMs += elapsed;
         document.getElementById(`time-${i}`).textContent = formatTime(elapsed);
@@ -83,15 +98,22 @@ function updateAll() {
         card.classList.toggle('running', isRunning);
         if (isRunning) anyRunning = true;
 
-        const labelDiv = card.querySelector('.card-label');
+        const labelSpan = document.getElementById(`label-${i}`) || card.querySelector('.card-label');
+        if (labelSpan) {
+            let displayLabel = DEFAULT_LABELS[i];
+            if (CUSTOM_INDICES.includes(i) && children[i].customLabel) {
+                displayLabel = children[i].customLabel;
+            }
+            labelSpan.textContent = displayLabel;
+        }
+
         const badgeSpan = card.querySelector('.group-badge');
-        const originalLabel = LABELS_STRINGS[i];
+        const defaultLabel = DEFAULT_LABELS[i];
         const badgeText = GROUP_BADGES[i];
         if (isRunning && badgeText) {
-            labelDiv.textContent = `${originalLabel} - ${badgeText}`;
+            labelSpan.textContent = `${defaultLabel} - ${badgeText}`;
             if (badgeSpan) badgeSpan.style.display = 'none';
         } else {
-            labelDiv.textContent = originalLabel;
             if (badgeSpan) badgeSpan.style.display = '';
         }
     }
@@ -129,7 +151,7 @@ function updateAll() {
 // ── CONTROLS ──
 function toggleChild(idx) {
     const now = Date.now();
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < CARD_COUNT; i++) {
         if (i === idx) continue;
         const o = children[i];
         if (o.isRunning && o.startTimestamp) {
@@ -154,7 +176,7 @@ function toggleChild(idx) {
 function pauseAll() {
     const now = Date.now();
     let any = false;
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < CARD_COUNT; i++) {
         const c = children[i];
         if (c.isRunning && c.startTimestamp) {
             c.frozenElapsed += now - c.startTimestamp;
@@ -168,7 +190,7 @@ function pauseAll() {
 
 function resetAll() {
     if (!confirm('Reset all stopwatches?')) return;
-    children.forEach(c => { c.frozenElapsed = 0; c.isRunning = false; c.startTimestamp = null; });
+    children.forEach(c => { c.frozenElapsed = 0; c.isRunning = false; c.startTimestamp = null; c.customLabel = null; });
     otFrozenMs = 0;
     otStartParentMs = 0;
     localStorage.removeItem('marsStopwatches');
@@ -181,6 +203,23 @@ function handleActionButton() {
         pauseAll();
     } else {
         resetAll();
+    }
+}
+
+// ── RENAME LABELS ──
+function renameLabel(i) {
+    const current = children[i].customLabel || DEFAULT_LABELS[i];
+    const newLabel = prompt(`Rename the label for ${DEFAULT_LABELS[i]}:`, current);
+    if (newLabel !== null && newLabel.trim() !== '') {
+        children[i].customLabel = newLabel.trim();
+        saveData();
+        updateAll();
+        showToast(`✓ Renamed to "${newLabel.trim()}"`);
+    } else if (newLabel !== null) {
+        children[i].customLabel = DEFAULT_LABELS[i];
+        saveData();
+        updateAll();
+        showToast('↺ Reverted to default label');
     }
 }
 
@@ -221,7 +260,8 @@ function copyData() {
     pauseAll();
     const payload = children.map((c, i) => ({
         index: i,
-        label: LABELS[i],
+        label: DEFAULT_LABELS[i],
+        customLabel: CUSTOM_INDICES.includes(i) ? (c.customLabel || null) : null,
         frozenElapsed: c.frozenElapsed || 0,
         isRunning: false,
         startTimestamp: null
@@ -258,12 +298,13 @@ function applyPastedJSON(text) {
         const data = JSON.parse(text.trim());
         const entries = Array.isArray(data) ? data : (Array.isArray(data.entries) ? data.entries : []);
         const otData = Array.isArray(data) ? null : data._ot;
-        if (entries.length !== 9) { showToast('✗ Expected 9 entries', true); return; }
+        if (entries.length !== CARD_COUNT) { showToast(`✗ Expected ${CARD_COUNT} entries`, true); return; }
         const now = Date.now();
-        children = entries.map(item => {
+        children = entries.map((item, i) => {
             const fe = typeof item.frozenElapsed === 'number' ? Math.max(0, Math.floor(item.frozenElapsed)) : 0;
             const wr = item.isRunning === true;
-            return { frozenElapsed: fe, startTimestamp: wr ? now : null, isRunning: wr };
+            const cl = CUSTOM_INDICES.includes(i) ? (item.customLabel || DEFAULT_LABELS[i]) : undefined;
+            return { frozenElapsed: fe, startTimestamp: wr ? now : null, isRunning: wr, customLabel: cl };
         });
         if (otData) {
             otFrozenMs = typeof otData.frozenMs === 'number' ? otData.frozenMs : 0;
@@ -284,12 +325,25 @@ function applyPastedJSON(text) {
 // ── INIT ──
 function init() {
     if (!loadSavedData()) {
-        children = Array(9).fill(null).map(() => ({ frozenElapsed: 0, startTimestamp: null, isRunning: false }));
+        children = Array(CARD_COUNT).fill(null).map((_, i) => ({ 
+            frozenElapsed: 0, 
+            startTimestamp: null, 
+            isRunning: false,
+            customLabel: CUSTOM_INDICES.includes(i) ? DEFAULT_LABELS[i] : undefined
+        }));
     }
 
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < CARD_COUNT; i++) {
         document.getElementById(`card-${i}`).addEventListener('click', () => toggleChild(i));
     }
+
+    document.querySelectorAll('.edit-label').forEach(el => {
+        el.addEventListener('click', (e) => {
+            e.stopPropagation(); // prevent card toggle
+            const idx = parseInt(el.dataset.index, 10);
+            renameLabel(idx);
+        });
+    });
 
     const cb = document.getElementById('ot-checkbox');
     cb.checked = otMode;
