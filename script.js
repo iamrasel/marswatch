@@ -362,9 +362,9 @@ function init() {
 
     initTheme();
 
-    document.getElementById('date-label').textContent = new Date().toLocaleDateString('en-US', {
-        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-    });
+    document.getElementById('date-label').innerHTML = new Date().toLocaleDateString('en-US',
+        { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) +
+        ' <span class="credit" title="Contact raselh to report bugs and make suggestions.">© raselh</span>';
 
     updateAll();
     setInterval(updateAll, 10);

@@ -287,9 +287,14 @@ body:not(.dark) .theme-btn .moon-icon {
     padding-top: 18px;
 }
 
-.date-label {
-    text-transform: uppercase;
+.date-label { text-transform: uppercase; }
+
+.credit {
+    cursor: help;
+    transition: color 0.3s ease;
 }
+
+.credit:hover { color: var(--accent); }
 
 .main {
     flex: 1;
