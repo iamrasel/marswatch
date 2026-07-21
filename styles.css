@@ -240,6 +240,15 @@ body:not(.dark) .theme-btn .moon-icon {
     color: var(--ot-color);
 }
 
+.ot-rate {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 400;
+    margin-left: auto;
+    opacity: 0.5;
+    transition: opacity 0.3s;
+}
+
 .rail-controls {
     display: flex;
     flex-direction: column;

@@ -1,7 +1,7 @@
 let children = [];
-const TAKA_PER_MS = 250 / (60 * 60 * 1000);
+let defaultOtRate = 250;
 let otMode = false;
-let otFrozenMs = 0;
+let prevOtAmount = 0;
 let otStartParentMs = 0;
 
 const DEFAULT_LABELS = [
@@ -33,17 +33,39 @@ function loadSavedData() {
         });
         while (children.length < CARD_COUNT) {
             const i = children.length;
-            children.push({ 
-                frozenElapsed: 0, 
-                startTimestamp: null, 
+            children.push({
+                frozenElapsed: 0,
+                startTimestamp: null,
                 isRunning: false,
                 customLabel: CUSTOM_INDICES.includes(i) ? DEFAULT_LABELS[i] : undefined
             });
         }
         if (data[0]?._ot !== undefined) {
-            otFrozenMs = data[0]._ot.frozenMs || 0;
-            otStartParentMs = data[0]._ot.startParentMs || 0;
-            otMode = data[0]._ot.mode === true;
+            const ot = data[0]._ot;
+            otMode = ot.mode === true;
+            otStartParentMs = ot.startParentMs || 0;
+            if (typeof ot.accrued === 'number') {
+                prevOtAmount = ot.accrued;
+            } else if (typeof ot.frozenMs === 'number') {
+                const rate = (typeof ot.rate === 'number' && ot.rate > 0) ? ot.rate : defaultOtRate;
+                prevOtAmount = ot.frozenMs * (rate / (60 * 60 * 1000));
+            } else {
+                prevOtAmount = 0;
+            }
+            if (typeof ot.rate === 'number' && ot.rate > 0) {
+                defaultOtRate = ot.rate;
+            } else {
+                defaultOtRate = defaultOtRate;
+            }
+        } else {
+            const savedRate = localStorage.getItem('marsOtRate');
+            if (savedRate !== null) {
+                const parsed = parseFloat(savedRate);
+                if (!isNaN(parsed) && parsed > 0) defaultOtRate = parsed;
+            }
+            prevOtAmount = 0;
+            otStartParentMs = 0;
+            otMode = false;
         }
         return true;
     } catch (e) {
@@ -61,7 +83,9 @@ function saveData() {
         if (CUSTOM_INDICES.includes(i) && c.customLabel && c.customLabel !== DEFAULT_LABELS[i]) {
             e.customLabel = c.customLabel;
         }
-        if (i === 0) e._ot = { frozenMs: otFrozenMs, startParentMs: otStartParentMs, mode: otMode };
+        if (i === 0) e._ot = {
+            mode: otMode, startParentMs: otStartParentMs, accrued: prevOtAmount, rate: defaultOtRate
+        };
         return e;
     });
     localStorage.setItem('marsStopwatches', JSON.stringify(saved));
@@ -83,6 +107,8 @@ function getCurrentElapsed(i) {
     if (!c.isRunning || !c.startTimestamp) return c.frozenElapsed || 0;
     return (c.frozenElapsed || 0) + (Date.now() - c.startTimestamp);
 }
+
+function getTakaPerMs() { return defaultOtRate / (60 * 60 * 1000); }
 
 // ── RENDER ──
 function updateAll() {
@@ -133,18 +159,35 @@ function updateAll() {
         actionBtn.classList.add('danger');
     }
 
-    const otAmt = otMode
-        ? (otFrozenMs + (totalMs - otStartParentMs)) * TAKA_PER_MS
-        : otFrozenMs * TAKA_PER_MS;
+    let otAmount = prevOtAmount;
+    if (otMode) {
+        const segmentMs = totalMs - otStartParentMs;
+        if (segmentMs > 0) otAmount += segmentMs * getTakaPerMs();
+    }
 
     const otValueDiv = document.getElementById('ot-value');
     const otBlock = document.getElementById('ot-block');
     if (otMode) {
-        otValueDiv.textContent = '৳ ' + otAmt.toFixed(2);
+        otValueDiv.textContent = '৳ ' + otAmount.toFixed(2);
         otBlock.classList.add('active');
     } else {
-        otValueDiv.textContent = 'OT Mode';
+        otValueDiv.textContent = 'OT';
         otBlock.classList.remove('active');
+    }
+
+    const rateEl = document.getElementById('ot-rate');
+    rateEl.textContent = `${defaultOtRate} ৳/Hr`;
+    if (anyRunning) {
+        rateEl.style.cursor = 'not-allowed';
+        rateEl.style.opacity = '0.5';
+    } else {
+        rateEl.style.cursor = 'pointer';
+        rateEl.addEventListener('mouseenter', () => {
+            rateEl.style.opacity = '1';
+        });
+        rateEl.addEventListener('mouseleave', () => {
+            rateEl.style.opacity = '0.5';
+        });
     }
 }
 
@@ -191,10 +234,15 @@ function pauseAll() {
 function resetAll() {
     if (!confirm('Reset all stopwatches?')) return;
     children.forEach(c => { c.frozenElapsed = 0; c.isRunning = false; c.startTimestamp = null; c.customLabel = null; });
-    otFrozenMs = 0;
+    prevOtAmount = 0;
     otStartParentMs = 0;
+    otMode = false;
+    defaultOtRate = defaultOtRate;
+    document.getElementById('ot-checkbox').checked = false;
     localStorage.removeItem('marsStopwatches');
+    localStorage.setItem('marsOtRate', String(defaultOtRate));
     updateAll();
+    showToast('✓ Reset done');
 }
 
 function handleActionButton() {
@@ -221,6 +269,30 @@ function renameLabel(i) {
         updateAll();
         showToast('↺ Reverted to default label');
     }
+}
+
+function editOtRate() {
+    if (children.some(c => c.isRunning)) return;
+    const current = defaultOtRate;
+    const input = prompt('Enter new OT rate (৳ per hour):', String(current));
+    if (input === null) return;
+    const newRate = parseFloat(input.trim());
+    if (isNaN(newRate) || newRate <= 0) {
+        showToast('✗ Please enter a positive number', true);
+        return;
+    }
+
+    const totalMs = children.reduce((s, _, i) => s + getCurrentElapsed(i), 0);
+    if (otMode) {
+        const segmentMs = totalMs - otStartParentMs;
+        if (segmentMs > 0) prevOtAmount += segmentMs * getTakaPerMs();
+        otStartParentMs = totalMs;
+    }
+
+    defaultOtRate = newRate;
+    saveData();
+    updateAll();
+    showToast(`✓ Rate updated to ${defaultOtRate} ৳/Hr`);
 }
 
 // ── THEME TOGGLE ──
@@ -266,10 +338,11 @@ function copyData() {
         isRunning: false,
         startTimestamp: null
     }));
-    const json = JSON.stringify(
-        { entries: payload, _ot: { frozenMs: otFrozenMs, startParentMs: otStartParentMs, mode: otMode } },
-        null, 2
-    );
+    const json = JSON.stringify({
+        entries: payload, _ot: {
+            mode: otMode, startParentMs: otStartParentMs, accrued: prevOtAmount, rate: defaultOtRate
+        }
+    }, null, 2);
     navigator.clipboard.writeText(json)
         .then(() => showToast('✓ Copied to clipboard'))
         .catch(() => {
@@ -307,11 +380,14 @@ function applyPastedJSON(text) {
             return { frozenElapsed: fe, startTimestamp: wr ? now : null, isRunning: wr, customLabel: cl };
         });
         if (otData) {
-            otFrozenMs = typeof otData.frozenMs === 'number' ? otData.frozenMs : 0;
-            otStartParentMs = typeof otData.startParentMs === 'number' ? otData.startParentMs : 0;
             otMode = otData.mode === true;
+            otStartParentMs = otData.startParentMs || 0;
+            prevOtAmount = typeof otData.accrued === 'number' ? otData.accrued : 0;
+            if (typeof otData.rate === 'number' && otData.rate > 0) {
+                defaultOtRate = otData.rate;
+            } else defaultOtRate = defaultOtRate;
         } else {
-            otFrozenMs = 0; otStartParentMs = 0; otMode = false;
+            prevOtAmount = 0; otStartParentMs = 0; otMode = false;
         }
         document.getElementById('ot-checkbox').checked = otMode;
         saveData();
@@ -325,12 +401,16 @@ function applyPastedJSON(text) {
 // ── INIT ──
 function init() {
     if (!loadSavedData()) {
-        children = Array(CARD_COUNT).fill(null).map((_, i) => ({ 
-            frozenElapsed: 0, 
-            startTimestamp: null, 
+        children = Array(CARD_COUNT).fill(null).map((_, i) => ({
+            frozenElapsed: 0,
+            startTimestamp: null,
             isRunning: false,
             customLabel: CUSTOM_INDICES.includes(i) ? DEFAULT_LABELS[i] : undefined
         }));
+        defaultOtRate = defaultOtRate;
+        prevOtAmount = 0;
+        otStartParentMs = 0;
+        otMode = false;
     }
 
     for (let i = 0; i < CARD_COUNT; i++) {
@@ -339,7 +419,7 @@ function init() {
 
     document.querySelectorAll('.edit-label').forEach(el => {
         el.addEventListener('click', (e) => {
-            e.stopPropagation(); // prevent card toggle
+            e.stopPropagation();
             const idx = parseInt(el.dataset.index, 10);
             renameLabel(idx);
         });
@@ -353,12 +433,17 @@ function init() {
             otStartParentMs = totalMs;
             otMode = true;
         } else {
-            otFrozenMs += totalMs - otStartParentMs;
-            otMode = false;
+            if (otMode) {
+                const segmentMs = totalMs - otStartParentMs;
+                if (segmentMs > 0) prevOtAmount += segmentMs * getTakaPerMs();
+                otMode = false;
+            }
         }
         saveData();
         updateAll();
     });
+
+    document.getElementById('ot-rate').addEventListener('click', editOtRate);
 
     initTheme();
 
