@@ -10,6 +10,49 @@
 </head>
 
 <body class="dark">
+
+    <aside class="rail-left">
+        <div class="rail-header">
+            <div class="logo">MARS<br />WATCH</div>
+            <button class="theme-btn" id="themeToggle" title="Switch theme">
+                <svg class="sun-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5" />
+                    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+                </svg>
+                <svg class="moon-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="center-section">
+            <div class="total-block">
+                <div class="total-time" id="parent-time">00:00:00.00</div>
+                <div class="total-label">Total Achieved Hours</div>
+            </div>
+            <div class="action-wrapper">
+                <button class="rail-btn action-btn" id="action-btn" onclick="handleActionButton()">
+                    <svg viewBox="0 -960 960 960" width="22" height="22">
+                        <path id="action-icon-path" d="M560-200v-560h160v560H560Zm-320 0v-560h160v560H240Z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="ot-block" id="ot-block">
+            <label class="switch">
+                <input type="checkbox" id="ot-checkbox" />
+                <span class="switch-track"></span>
+            </label>
+            <div class="ot-value" id="ot-value">OT</div>
+            <div class="ot-rate" id="ot-rate">250 ৳/Hr</div>
+        </div>
+
+        <div class="rail-footer">
+            <span class="date-label" id="date-label"></span>
+        </div>
+    </aside>
+
     <main class="main">
         <div class="card-grid">
             <!-- TOP ROW -->
@@ -87,61 +130,19 @@
     </main>
 
     <aside class="rail-right">
-        <div class="rail-header">
-            <div class="logo">MARS<br>WATCH</div>
-            <button class="theme-btn" id="themeToggle" title="Switch theme">
-                <svg class="sun-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
-                    stroke-width="2">
-                    <circle cx="12" cy="12" r="5" />
-                    <path
-                        d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-                </svg>
-                <svg class="moon-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
-                    stroke-width="2">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                </svg>
-            </button>
-        </div>
-
-        <div class="total-block">
-            <div class="total-time" id="parent-time">00:00:00.00</div>
-            <div class="total-label">Achieved Hours</div>
-        </div>
-
-        <div class="ot-block" id="ot-block">
-            <label class="switch">
-                <input type="checkbox" id="ot-checkbox">
-                <span class="switch-track"></span>
-            </label>
-            <div class="ot-value" id="ot-value">OT</div>
-            <div class="ot-rate" id="ot-rate">250 ৳/Hr</div>
-        </div>
-
         <div class="rail-controls">
-            <button class="rail-btn" id="action-btn" onclick="handleActionButton()">
-                <svg viewBox="0 -960 960 960" width="14" height="14">
-                    <path d="M560-200v-560h160v560H560Zm-320 0v-560h160v560H240Z" />
+            <button class="rail-btn" onclick="copyData()" title="Copy Backup">
+                <svg width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
                 </svg>
-                <span id="action-btn-text">Pause</span>
             </button>
-            <button class="rail-btn" onclick="copyData()">
-                <svg viewBox="0 -960 960 960" width="14" height="14">
-                    <path
-                        d="M362.31-260Q332-260 311-281q-21-21-21-51.31v-455.38Q290-818 311-839q21-21 51.31-21h335.38Q728-860 749-839q21 21 21 51.31v455.38Q770-302 749-281q-21 21-51.31 21H362.31Z" />
+            <button class="rail-btn" onclick="pasteData()" title="Paste Backup">
+                <svg width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0"/>
+                    <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1z"/>
+                    <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0z"/>
                 </svg>
-                Copy Backup
             </button>
-            <button class="rail-btn" onclick="pasteData()">
-                <svg viewBox="0 -960 960 960" width="14" height="14">
-                    <path
-                        d="M212.31-140q-29.92 0-51.12-21.19Q140-182.39 140-212.31v-535.38q0-29.92 21.19-51.12Q182.39-820 212.31-820h176.23q8.31-29.23 33.96-48.46t57.5-19.23q33.08 0 58.42 19.23 25.35 19.23 33.66 48.46h175.61q29.92 0 51.12 21.19Q820-777.61 820-747.69v535.38q0 29.92-21.19 51.12Q777.61-140 747.69-140H212.31Z" />
-                </svg>
-                Paste Backup
-            </button>
-        </div>
-
-        <div class="rail-footer">
-            <span class="date-label" id="date-label"></span>
         </div>
     </aside>
 

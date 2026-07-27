@@ -54,8 +54,6 @@ function loadSavedData() {
             }
             if (typeof ot.rate === 'number' && ot.rate > 0) {
                 defaultOtRate = ot.rate;
-            } else {
-                defaultOtRate = defaultOtRate;
             }
         } else {
             const savedRate = localStorage.getItem('marsOtRate');
@@ -68,7 +66,7 @@ function loadSavedData() {
             otMode = false;
         }
         return true;
-    } catch (e) {
+    } catch (_) {
         return false;
     }
 }
@@ -145,29 +143,19 @@ function updateAll() {
     }
 
     document.getElementById('parent-time').textContent = formatTime(totalMs);
-
     const actionBtn = document.getElementById('action-btn');
-    const actionText = document.getElementById('action-btn-text');
-    const actionIcon = actionBtn.querySelector('svg');
-    if (anyRunning) {
-        actionText.textContent = 'Pause';
-        actionIcon.innerHTML = '<path d="M560-200v-560h160v560H560Zm-320 0v-560h160v560H240Z"/>';
-        actionBtn.classList.remove('danger');
-    } else {
-        actionText.textContent = 'Reset';
-        actionIcon.innerHTML = '<path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z"/>';
-        actionBtn.classList.add('danger');
-    }
+    const iconPath = document.getElementById('action-icon-path');
+    const otValueDiv = document.getElementById('ot-value');
+    const otBlock = document.getElementById('ot-block');
+    const rateEl = document.getElementById('ot-rate');
+    rateEl.textContent = `${defaultOtRate} ৳/Hr`;
 
     let otAmount = prevOtAmount;
+
     if (otMode) {
         const segmentMs = totalMs - otStartParentMs;
         if (segmentMs > 0) otAmount += segmentMs * getTakaPerMs();
-    }
 
-    const otValueDiv = document.getElementById('ot-value');
-    const otBlock = document.getElementById('ot-block');
-    if (otMode) {
         otValueDiv.textContent = '৳ ' + otAmount.toFixed(2);
         otBlock.classList.add('active');
     } else {
@@ -175,12 +163,16 @@ function updateAll() {
         otBlock.classList.remove('active');
     }
 
-    const rateEl = document.getElementById('ot-rate');
-    rateEl.textContent = `${defaultOtRate} ৳/Hr`;
     if (anyRunning) {
+        iconPath.setAttribute('d', 'M560-200v-560h160v560H560Zm-320 0v-560h160v560H240Z');
+        actionBtn.classList.remove('danger');
+
         rateEl.style.cursor = 'not-allowed';
         rateEl.style.opacity = '0.5';
     } else {
+        iconPath.setAttribute('d', 'M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z');
+        actionBtn.classList.add('danger');
+
         rateEl.style.cursor = 'pointer';
         rateEl.addEventListener('mouseenter', () => {
             rateEl.style.opacity = '1';
@@ -237,7 +229,7 @@ function resetAll() {
     prevOtAmount = 0;
     otStartParentMs = 0;
     otMode = false;
-    defaultOtRate = defaultOtRate;
+    defaultOtRate = 250;
     document.getElementById('ot-checkbox').checked = false;
     localStorage.removeItem('marsStopwatches');
     localStorage.setItem('marsOtRate', String(defaultOtRate));
@@ -385,7 +377,7 @@ function applyPastedJSON(text) {
             prevOtAmount = typeof otData.accrued === 'number' ? otData.accrued : 0;
             if (typeof otData.rate === 'number' && otData.rate > 0) {
                 defaultOtRate = otData.rate;
-            } else defaultOtRate = defaultOtRate;
+            }
         } else {
             prevOtAmount = 0; otStartParentMs = 0; otMode = false;
         }
@@ -393,8 +385,8 @@ function applyPastedJSON(text) {
         saveData();
         updateAll();
         showToast('✓ Data imported');
-    } catch (e) {
-        showToast('✗ Invalid JSON', true);
+    } catch (_) {
+        showToast('✗ Invalid JSON data', true);
     }
 }
 
@@ -407,7 +399,7 @@ function init() {
             isRunning: false,
             customLabel: CUSTOM_INDICES.includes(i) ? DEFAULT_LABELS[i] : undefined
         }));
-        defaultOtRate = defaultOtRate;
+        defaultOtRate = 250;
         prevOtAmount = 0;
         otStartParentMs = 0;
         otMode = false;
