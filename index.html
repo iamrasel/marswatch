@@ -25,27 +25,42 @@
             </button>
         </div>
 
-        <div class="center-section">
-            <div class="total-block">
-                <div class="total-time" id="parent-time">00:00:00.00</div>
-                <div class="total-label">Total Achieved Hours</div>
+        <div class="rail-middle" id="railMiddle">
+            <div class="normal-view" id="normalView">
+                <div class="center-section">
+                    <div class="total-block">
+                        <div class="total-time" id="parent-time">00:00:00.00</div>
+                        <div class="total-label">Total Achieved Hours</div>
+                    </div>
+                    <div class="action-wrapper">
+                        <button class="rail-btn action-btn" id="action-btn" onclick="handleActionButton()">
+                            <svg viewBox="0 -960 960 960" width="22" height="22">
+                                <path id="action-icon-path" d="M560-200v-560h160v560H560Zm-320 0v-560h160v560H240Z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="ot-block" id="ot-block">
+                    <label class="switch">
+                        <input type="checkbox" id="ot-checkbox" />
+                        <span class="switch-track"></span>
+                    </label>
+                    <div class="ot-value" id="ot-value">OT</div>
+                    <div class="ot-rate" id="ot-rate">250 ৳/Hr</div>
+                </div>
             </div>
-            <div class="action-wrapper">
-                <button class="rail-btn action-btn" id="action-btn" onclick="handleActionButton()">
-                    <svg viewBox="0 -960 960 960" width="22" height="22">
-                        <path id="action-icon-path" d="M560-200v-560h160v560H560Zm-320 0v-560h160v560H240Z" />
-                    </svg>
-                </button>
-            </div>
-        </div>
 
-        <div class="ot-block" id="ot-block">
-            <label class="switch">
-                <input type="checkbox" id="ot-checkbox" />
-                <span class="switch-track"></span>
-            </label>
-            <div class="ot-value" id="ot-value">OT</div>
-            <div class="ot-rate" id="ot-rate">250 ৳/Hr</div>
+            <div class="escalate-view" id="escalateView">
+                <div class="escalate-spacer"></div>
+                <div class="escalate-buttons">
+                    <button class="esc-notes">- Name Match Confusion</button>
+                    <button class="esc-notes">- Geo Match Confusion</button>
+                    <button class="esc-notes">- Age Match Confusion</button>
+                    <button class="esc-notes">- Uncommon Name</button>
+                    <button class="esc-notes">- Relation Confusion</button>
+                    <button class="esc-notes">Auto Escalate</button>
+                </div>
+            </div>
         </div>
 
         <div class="rail-footer">
@@ -131,6 +146,13 @@
 
     <aside class="rail-right">
         <div class="rail-controls">
+            <button class="rail-btn" id="escalateToggleBtn" onclick="toggleEscNotes()" title="Escalate Notes">
+                <svg width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2z"/>
+                    <path d="M5 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 5 8m0-2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m0 5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-1-5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0M4 8a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0m0 2.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0"/>
+                </svg>
+            </button>
+            <div class="rail-divider"></div>
             <button class="rail-btn" onclick="copyData()" title="Copy Backup">
                 <svg width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>

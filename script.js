@@ -319,7 +319,26 @@ function showToast(msg, isError = false) {
     t._t = setTimeout(() => { t.className = ''; }, 2200);
 }
 
-// ── COPY / PASTE ──
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text)
+        .then(() => showToast('✓ Copied to clipboard'))
+        .catch(() => {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none;';
+            document.body.appendChild(ta);
+            ta.select();
+            try {
+                document.execCommand('copy');
+                showToast('✓ Copied to clipboard');
+            } catch (_) {
+                showToast('✗ Failed to copy', true);
+            }
+            document.body.removeChild(ta);
+        });
+}
+
+// ── COPY / PASTE JSON DATA ──
 function copyData() {
     pauseAll();
     const payload = children.map((c, i) => ({
@@ -335,18 +354,7 @@ function copyData() {
             mode: otMode, startParentMs: otStartParentMs, accrued: prevOtAmount, rate: defaultOtRate
         }
     }, null, 2);
-    navigator.clipboard.writeText(json)
-        .then(() => showToast('✓ Copied to clipboard'))
-        .catch(() => {
-            const ta = document.createElement('textarea');
-            ta.value = json;
-            ta.style.cssText = 'position:fixed;opacity:0';
-            document.body.appendChild(ta);
-            ta.select();
-            document.execCommand('copy');
-            document.body.removeChild(ta);
-            showToast('✓ Copied to clipboard');
-        });
+    copyToClipboard(json);
 }
 
 function pasteData() {
@@ -388,6 +396,33 @@ function applyPastedJSON(text) {
     } catch (_) {
         showToast('✗ Invalid JSON data', true);
     }
+}
+
+// ─── ESCALATE NOTES TOGGLE ───
+function toggleEscNotes() {
+    const normalView = document.getElementById('normalView');
+    const escalateView = document.getElementById('escalateView');
+    const toggleBtn = document.getElementById('escalateToggleBtn');
+    const isEscalateActive = escalateView.classList.contains('active');
+
+    if (isEscalateActive) {
+        normalView.classList.remove('hidden');
+        escalateView.classList.remove('active');
+        toggleBtn.classList.remove('active');
+    } else {
+        normalView.classList.add('hidden');
+        escalateView.classList.add('active');
+        toggleBtn.classList.add('active');
+    }
+}
+
+function setupEscNoteBtns() {
+    document.querySelectorAll('.esc-notes').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            copyToClipboard(this.textContent.trim());
+        });
+    });
 }
 
 // ── INIT ──
@@ -435,9 +470,9 @@ function init() {
         updateAll();
     });
 
-    document.getElementById('ot-rate').addEventListener('click', editOtRate);
-
     initTheme();
+    document.getElementById('ot-rate').addEventListener('click', editOtRate);
+    setupEscNoteBtns();
 
     document.getElementById('date-label').innerHTML = new Date().toLocaleDateString('en-US',
         { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) +

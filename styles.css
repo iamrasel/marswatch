@@ -145,6 +145,51 @@ body:not(.dark) .theme-btn .moon-icon {
     transform: scale(0.9);
 }
 
+.rail-middle {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    position: relative;
+}
+
+.normal-view,
+.escalate-view {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    flex: 1;
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+    will-change: opacity, transform;
+}
+
+.normal-view {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.normal-view.hidden {
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-20px);
+    pointer-events: none;
+}
+
+.escalate-view {
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-20px);
+    pointer-events: none;
+}
+
+.escalate-view.active {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
 .center-section {
     flex: 1;
     display: flex;
@@ -271,6 +316,46 @@ body:not(.dark) .theme-btn .moon-icon {
     flex-shrink: 0;
 }
 
+.escalate-view {
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-bottom: 10px;
+}
+
+.escalate-view.active { display: flex; }
+
+.escalate-spacer { flex: 1; }
+
+.escalate-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.esc-notes {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    width: 100%;
+}
+
+.esc-notes:hover {
+    border-color: var(--accent);
+    background: var(--btn-hover-bg);
+    transform: translateX(3px);
+}
+
 .rail-footer {
     text-align: center;
     font-size: 0.5rem;
@@ -279,6 +364,7 @@ body:not(.dark) .theme-btn .moon-icon {
     border-top: 1px solid var(--border);
     padding-top: 10px;
     flex-shrink: 0;
+    margin-top: auto;
 }
 
 .date-label { text-transform: uppercase; }
@@ -306,6 +392,13 @@ body:not(.dark) .theme-btn .moon-icon {
     flex-direction: column;
     align-items: center;
     gap: 6px;
+}
+
+.rail-divider {
+    width: 20px;
+    height: 1px;
+    background: var(--border);
+    margin: 4px 0;
 }
 
 .rail-btn {
@@ -348,6 +441,13 @@ body:not(.dark) .theme-btn .moon-icon {
 .action-btn svg {
     width: 20px;
     height: 20px;
+}
+
+.rail-btn#escalateToggleBtn.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--btn-hover-bg);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 30%, transparent);
 }
 
 /* ----- CHILD STOPWATCHES ----- */
