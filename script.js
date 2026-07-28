@@ -12,6 +12,7 @@ const DEFAULT_LABELS = [
 const GROUP_BADGES = ["L1", "L1", "L1", "L1", "", "", "", "", "L2", "L2", "L2", "L2"];
 const CARD_COUNT = 12;
 const CUSTOM_INDICES = [5, 6];
+const TASKS_PER_HOUR = [100, 35, 60, 25, null, null, null, null, 30, 15, 20, 10];
 
 // ── STORAGE ──
 function loadSavedData() {
@@ -139,6 +140,16 @@ function updateAll() {
             if (badgeSpan) badgeSpan.style.display = 'none';
         } else {
             if (badgeSpan) badgeSpan.style.display = '';
+        }
+
+        const tasksEl = document.getElementById(`task-${i}`);
+        if (tasksEl) {
+            const hours = elapsed / (60 * 60 * 1000);
+            if (hours > 0) {
+                tasksEl.style.display = 'inline';
+                const tasks = Math.floor(hours * TASKS_PER_HOUR[i]);
+                tasksEl.textContent = `[${tasks}]`;
+            } else tasksEl.style.display = 'none';
         }
     }
 

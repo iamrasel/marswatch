@@ -468,13 +468,13 @@ body:not(.dark) .theme-btn .moon-icon {
 }
 
 .card {
+    position: relative;
     border-radius: 20px;
     padding: 18px 20px;
     cursor: pointer;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    position: relative;
     transition: transform 0.2s ease, border 0.2s, background 0.2s, box-shadow 0.2s;
     background: var(--surface-a);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
@@ -587,7 +587,7 @@ body:not(.dark) .theme-btn .moon-icon {
 
 .group-badge {
     position: absolute;
-    top: 12px;
+    top: 16px;
     right: 14px;
     font-size: 0.6rem;
     font-weight: 500;
@@ -606,7 +606,7 @@ body:not(.dark) .theme-btn .moon-icon {
 
 .dot {
     position: absolute;
-    top: 14px;
+    top: 20px;
     right: 14px;
     width: 8px;
     height: 8px;
@@ -634,13 +634,28 @@ body:not(.dark) .theme-btn .moon-icon {
     box-shadow: 0 0 6px var(--muted);
 }
 
+.time-task-row {
+    display: flex;
+    align-items: baseline;
+    margin-top: 8px;
+    gap: 6px;
+}
+
 .card-time {
     font-family: 'Syne', sans-serif;
     font-weight: 700;
     font-size: 1.5rem;
     letter-spacing: -0.02em;
     color: var(--text);
-    margin-top: 8px;
+    font-variant-numeric: tabular-nums;
+}
+
+.task-count {
+    font-size: 0.6rem;
+    font-weight: 500;
+    color: var(--muted);
+    opacity: 0.7;
+    font-family: 'DM Mono', monospace;
 }
 
 @keyframes pulse {
