@@ -634,23 +634,17 @@ body:not(.dark) .theme-btn .moon-icon {
     box-shadow: 0 0 6px var(--muted);
 }
 
-.time-task-row {
-    display: flex;
-    align-items: baseline;
-    margin-top: 8px;
-    gap: 6px;
-}
-
 .card-time {
     font-family: 'Syne', sans-serif;
     font-weight: 700;
     font-size: 1.5rem;
     letter-spacing: -0.02em;
     color: var(--text);
-    font-variant-numeric: tabular-nums;
 }
 
 .task-count {
+    position: relative;
+    margin-top: auto;
     font-size: 0.6rem;
     font-weight: 500;
     color: var(--muted);

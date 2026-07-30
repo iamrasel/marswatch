@@ -12,6 +12,7 @@
 <body class="dark">
 
     <aside class="rail-left">
+
         <div class="rail-header">
             <div class="logo">MARS<br />WATCH</div>
             <button class="theme-btn" id="themeToggle" title="Switch theme">
@@ -26,6 +27,7 @@
         </div>
 
         <div class="rail-middle" id="railMiddle">
+
             <div class="normal-view" id="normalView">
                 <div class="center-section">
                     <div class="total-block">
@@ -56,11 +58,13 @@
                     <button class="esc-notes">- Name Match Confusion</button>
                     <button class="esc-notes">- Geo Match Confusion</button>
                     <button class="esc-notes">- Age Match Confusion</button>
+                    <button class="esc-notes">- Definite Confusion</button>
                     <button class="esc-notes">- Uncommon Name</button>
                     <button class="esc-notes">- Relation Confusion</button>
                     <button class="esc-notes">Auto Escalate</button>
                 </div>
             </div>
+
         </div>
 
         <div class="rail-footer">
@@ -74,34 +78,26 @@
             <div id="card-0" class="card group-a"><span class="group-badge">L1</span>
                 <div class="dot"></div>
                 <div class="card-label">US Look Back</div>
-                <div class="time-task-row">
-                    <div id="time-0" class="card-time">00:00:00.00</div>
-                    <span class="task-count" id="task-0">[0]</span>
-                </div>
+                <span class="task-count" id="task-0">[0]</span>
+                <div id="time-0" class="card-time">00:00:00.00</div>
             </div>
             <div id="card-1" class="card group-a"><span class="group-badge">L1</span>
                 <div class="dot"></div>
                 <div class="card-label">US Look Forward</div>
-                <div class="time-task-row">
-                    <div id="time-1" class="card-time">00:00:00.00</div>
-                    <span class="task-count" id="task-1">[0]</span>
-                </div>
+                <span class="task-count" id="task-1">[0]</span>
+                <div id="time-1" class="card-time">00:00:00.00</div>
             </div>
             <div id="card-2" class="card group-a"><span class="group-badge">L1</span>
                 <div class="dot"></div>
                 <div class="card-label">EU Look Back</div>
-                <div class="time-task-row">
-                    <div id="time-2" class="card-time">00:00:00.00</div>
-                    <span class="task-count" id="task-2">[0]</span>
-                </div>
+                <span class="task-count" id="task-2">[0]</span>
+                <div id="time-2" class="card-time">00:00:00.00</div>
             </div>
             <div id="card-3" class="card group-a"><span class="group-badge">L1</span>
                 <div class="dot"></div>
                 <div class="card-label">EU Look Forward</div>
-                <div class="time-task-row">
-                    <div id="time-3" class="card-time">00:00:00.00</div>
-                    <span class="task-count" id="task-3">[0]</span>
-                </div>
+                <span class="task-count" id="task-3">[0]</span>
+                <div id="time-3" class="card-time">00:00:00.00</div>
             </div>
 
             <!-- MIDDLE ROW -->
@@ -136,34 +132,26 @@
             <div id="card-8" class="card group-b"><span class="group-badge">L2</span>
                 <div class="dot"></div>
                 <div class="card-label">US Look Back</div>
-                <div class="time-task-row">
-                    <div id="time-8" class="card-time">00:00:00.00</div>
-                    <span class="task-count" id="task-8">[0]</span>
-                </div>
+                <span class="task-count" id="task-8">[0]</span>
+                <div id="time-8" class="card-time">00:00:00.00</div>
             </div>
             <div id="card-9" class="card group-b"><span class="group-badge">L2</span>
                 <div class="dot"></div>
                 <div class="card-label">US Look Forward</div>
-                <div class="time-task-row">
-                    <div id="time-9" class="card-time">00:00:00.00</div>
-                    <span class="task-count" id="task-9">[0]</span>
-                </div>
+                <span class="task-count" id="task-9">[0]</span>
+                <div id="time-9" class="card-time">00:00:00.00</div>
             </div>
             <div id="card-10" class="card group-b"><span class="group-badge">L2</span>
                 <div class="dot"></div>
                 <div class="card-label">EU Look Back</div>
-                <div class="time-task-row">
-                    <div id="time-10" class="card-time">00:00:00.00</div>
-                    <span class="task-count" id="task-10">[0]</span>
-                </div>
+                <span class="task-count" id="task-10">[0]</span>
+                <div id="time-10" class="card-time">00:00:00.00</div>
             </div>
             <div id="card-11" class="card group-b"><span class="group-badge">L2</span>
                 <div class="dot"></div>
                 <div class="card-label">EU Look Forward</div>
-                <div class="time-task-row">
-                    <div id="time-11" class="card-time">00:00:00.00</div>
-                    <span class="task-count" id="task-11">[0]</span>
-                </div>
+                <span class="task-count" id="task-11">[0]</span>
+                <div id="time-11" class="card-time">00:00:00.00</div>
             </div>
         </div>
     </main>
@@ -172,8 +160,7 @@
         <div class="rail-controls">
             <button class="rail-btn" id="escalateToggleBtn" onclick="toggleEscNotes()" title="Escalate Notes">
                 <svg width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2z"/>
-                    <path d="M5 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 5 8m0-2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m0 5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-1-5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0M4 8a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0m0 2.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0"/>
+                    <path d="M3 4.5h10a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2m0 1a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1zM1 2a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 2m0 12a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 14"/>
                 </svg>
             </button>
             <div class="rail-divider"></div>
