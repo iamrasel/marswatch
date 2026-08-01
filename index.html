@@ -52,6 +52,17 @@
                 </div>
             </div>
 
+            <div class="marsLists-view" id="marsListsView">
+                <div class="marsLists-spacer"></div>
+                <div class="marsLists-buttons">
+                    <button class="mars-lists" data-action="surnames">1000 Common Surnames</button>
+                    <button class="mars-lists" data-action="mslist">MS Whitelist</button>
+                    <button class="mars-lists" data-action="lplist">LP Whitelist</button>
+                    <button class="mars-lists" data-action="extlist">Legal Extensions</button>
+                    <button class="mars-lists" data-action="companies">Fortune X Top 100</button>
+                </div>
+            </div>
+
             <div class="escalate-view" id="escalateView">
                 <div class="escalate-spacer"></div>
                 <div class="escalate-buttons">
@@ -158,7 +169,12 @@
 
     <aside class="rail-right">
         <div class="rail-controls">
-            <button class="rail-btn" id="escalateToggleBtn" onclick="toggleEscNotes()" title="Escalate Notes">
+            <button class="rail-btn" id="marsLists" onclick="toggleView('lists')" title="Mars Lists">
+                <svg width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M4.5 11.5A.5.5 0 0 1 5 11h10a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5m-2-4A.5.5 0 0 1 3 7h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m-2-4A.5.5 0 0 1 1 3h10a.5.5 0 0 1 0 1H1a.5.5 0 0 1-.5-.5"/>
+                </svg>
+            </button>
+            <button class="rail-btn" id="escalateToggleBtn" onclick="toggleView('notes')" title="Escalate Notes">
                 <svg width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
                     <path d="M3 4.5h10a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2m0 1a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1zM1 2a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 2m0 12a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 14"/>
                 </svg>
@@ -178,6 +194,21 @@
             </button>
         </div>
     </aside>
+
+    <div class="modal-overlay" id="marsModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span class="modal-title" id="modalTitle"></span>
+                <button class="modal-close" id="modalCloseBtn" title="Close">&times;</button>
+            </div>
+            <div class="modal-search-wrap">
+                <input class="modal-search" id="modalSearch" type="text" placeholder="Type to filter..." autofocus />
+                <span class="modal-count" id="modalCount">0</span>
+            </div>
+            <div class="modal-list" id="modalList"></div>
+            <div class="modal-empty" id="modalEmpty">Your search query doesn't match with any item.</div>
+        </div>
+    </div>
 
     <div id="mars-toast"></div>
 

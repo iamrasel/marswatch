@@ -3,6 +3,8 @@ let defaultOtRate = 250;
 let otMode = false;
 let prevOtAmount = 0;
 let otStartParentMs = 0;
+let modalItems = [];
+let modalFiltered = [];
 
 const DEFAULT_LABELS = [
     "US Look Back", "US Look Forward", "EU Look Back", "EU Look Forward",
@@ -409,22 +411,111 @@ function applyPastedJSON(text) {
     }
 }
 
-// ─── ESCALATE NOTES TOGGLE ───
-function toggleEscNotes() {
-    const normalView = document.getElementById('normalView');
-    const escalateView = document.getElementById('escalateView');
-    const toggleBtn = document.getElementById('escalateToggleBtn');
-    const isEscalateActive = escalateView.classList.contains('active');
+function toggleView(viewType) {
+    const configs = {
+        lists: {
+            viewId: 'marsListsView',
+            btnId: 'marsLists',
+            otherViewId: 'escalateView',
+            otherBtnId: 'escalateToggleBtn'
+        },
+        notes: {
+            viewId: 'escalateView',
+            btnId: 'escalateToggleBtn',
+            otherViewId: 'marsListsView',
+            otherBtnId: 'marsLists'
+        }
+    };
 
-    if (isEscalateActive) {
+    const config = configs[viewType];
+    if (!config) return;
+
+    const normalView = document.getElementById('normalView');
+    const targetView = document.getElementById(config.viewId);
+    const otherView = document.getElementById(config.otherViewId);
+    const targetBtn = document.getElementById(config.btnId);
+    const otherBtn = document.getElementById(config.otherBtnId);
+
+    const isTargetActive = targetView.classList.contains('active');
+
+    if (isTargetActive) {
         normalView.classList.remove('hidden');
-        escalateView.classList.remove('active');
-        toggleBtn.classList.remove('active');
+        targetView.classList.remove('active');
+        targetBtn.classList.remove('active');
     } else {
+        if (otherView.classList.contains('active')) {
+            otherView.classList.remove('active');
+            otherBtn.classList.remove('active');
+        }
         normalView.classList.add('hidden');
-        escalateView.classList.add('active');
-        toggleBtn.classList.add('active');
+        targetView.classList.add('active');
+        targetBtn.classList.add('active');
     }
+}
+
+function openMarsModal(title, items) {
+    const overlay = document.getElementById('marsModal');
+    document.getElementById('modalTitle').textContent = title;
+    modalItems = Array.isArray(items) ? items : [];
+    modalFiltered = [...modalItems];
+    renderModalList();
+    document.getElementById('modalSearch').value = '';
+    document.getElementById('modalCount').textContent = modalFiltered.length;
+    overlay.classList.add('active');
+    setTimeout(() => document.getElementById('modalSearch').focus(), 100);
+}
+
+function closeMarsModal() { document.getElementById('marsModal').classList.remove('active'); }
+
+function renderModalList() {
+    const list = document.getElementById('modalList');
+    const empty = document.getElementById('modalEmpty');
+    list.innerHTML = '';
+    if (modalFiltered.length === 0) {
+        empty.classList.add('visible');
+        return;
+    }
+    empty.classList.remove('visible');
+    modalFiltered.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'item';
+        div.textContent = item;
+        list.appendChild(div);
+    });
+}
+
+function filterModalList() {
+    const search = document.getElementById('modalSearch').value.toLowerCase().trim();
+    if (!search) modalFiltered = [...modalItems];
+    else modalFiltered = modalItems.filter(item => item.toLowerCase().includes(search));
+
+    document.getElementById('modalCount').textContent = modalFiltered.length;
+    renderModalList();
+}
+
+function setupMarsListsBtns() {
+    document.querySelectorAll('.mars-lists').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const action = btn.dataset.action;
+            switch (action) {
+                default:
+                    fetch(`lists/${action}.json`)
+                        .then(res => {
+                            if (!res.ok) throw new Error('File not found');
+                            return res.json();
+                        })
+                        .then(data => {
+                            if (Array.isArray(data)) openMarsModal(btn.textContent.trim(), data);
+                            else showToast('✗ Invalid data format', true);
+                        })
+                        .catch(() => {
+                            showToast(`✗ Failed to load the file for ${btn.textContent.trim()}`, true);
+                        });
+                break;
+            }
+        });
+    });
 }
 
 function setupEscNoteBtns() {
@@ -483,11 +574,19 @@ function init() {
 
     initTheme();
     document.getElementById('ot-rate').addEventListener('click', editOtRate);
+    setupMarsListsBtns();
     setupEscNoteBtns();
 
     document.getElementById('date-label').innerHTML = new Date().toLocaleDateString('en-US',
         { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) +
         ' <span class="credit" title="Contact raselh to report bugs and make suggestions.">© raselh</span>';
+
+    document.getElementById('modalCloseBtn').addEventListener('click', closeMarsModal);
+    document.getElementById('marsModal').addEventListener('click', function(e) {
+        if (e.target === this) closeMarsModal();
+    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMarsModal(); });
+    document.getElementById('modalSearch').addEventListener('input', filterModalList);
 
     updateAll();
     setInterval(updateAll, 10);
