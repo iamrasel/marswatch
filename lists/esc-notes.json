@@ -1,0 +1,11 @@
+[
+    "- Name Match Confusion",
+    "- Geo Match Confusion",
+    "- Age Match Confusion",
+    "- Duplicate Confusion",
+    "- Definite Confusion",
+    "- Uncommon Name",
+    "- Relation Confusion",
+    "- Fine Confusion",
+    "Auto Escalate"
+]

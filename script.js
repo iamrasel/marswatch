@@ -119,7 +119,11 @@ function updateAll() {
     for (let i = 0; i < CARD_COUNT; i++) {
         const elapsed = getCurrentElapsed(i);
         totalMs += elapsed;
-        document.getElementById(`time-${i}`).textContent = formatTime(elapsed);
+
+        const timeEl = document.getElementById(`time-${i}`);
+        const newTime = formatTime(elapsed);
+        if (timeEl.textContent !== newTime) timeEl.textContent = newTime;
+
         const card = document.getElementById(`card-${i}`);
         const isRunning = children[i].isRunning;
         card.classList.toggle('running', isRunning);
@@ -155,7 +159,10 @@ function updateAll() {
         }
     }
 
-    document.getElementById('parent-time').textContent = formatTime(totalMs);
+    const totalEl = document.getElementById('parent-time');
+    const totalStr = formatTime(totalMs);
+    if (totalEl.textContent !== totalStr) totalEl.textContent = totalStr;
+
     const actionBtn = document.getElementById('action-btn');
     const iconPath = document.getElementById('action-icon-path');
     const otValueDiv = document.getElementById('ot-value');
@@ -453,11 +460,12 @@ function toggleView(viewType) {
     }
 }
 
-function openMarsModal(title, items) {
+function openMarsModal(title, items, columns) {
     const overlay = document.getElementById('marsModal');
     document.getElementById('modalTitle').textContent = title;
     modalItems = Array.isArray(items) ? items : [];
     modalFiltered = [...modalItems];
+    document.getElementById('modalList').style.columnCount = columns;
     renderModalList();
     document.getElementById('modalSearch').value = '';
     document.getElementById('modalCount').textContent = modalFiltered.length;
@@ -493,38 +501,60 @@ function filterModalList() {
     renderModalList();
 }
 
-function setupMarsListsBtns() {
-    document.querySelectorAll('.mars-lists').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const action = btn.dataset.action;
-            switch (action) {
-                default:
-                    fetch(`lists/${action}.json`)
-                        .then(res => {
-                            if (!res.ok) throw new Error('File not found');
-                            return res.json();
-                        })
-                        .then(data => {
-                            if (Array.isArray(data)) openMarsModal(btn.textContent.trim(), data);
-                            else showToast('✗ Invalid data format', true);
-                        })
-                        .catch(() => {
-                            showToast(`✗ Failed to load the file for ${btn.textContent.trim()}`, true);
-                        });
-                break;
-            }
-        });
-    });
-}
+async function loadListsAndNotes() {
+    try {
+        const [marsRes, escRes] = await Promise.all([
+            fetch('lists/mars-lists.json'),
+            fetch('lists/esc-notes.json')
+        ]);
 
-function setupEscNoteBtns() {
-    document.querySelectorAll('.esc-notes').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            copyToClipboard(this.textContent.trim());
+        if (!marsRes.ok) throw new Error('Failed to load Mars Lists config');
+        if (!escRes.ok) throw new Error('Failed to load Escalate Notes config');
+
+        const marsButtons = await marsRes.json();
+        const escButtons = await escRes.json();
+
+        const marsContainer = document.getElementById('marsListsBtns');
+        const escContainer = document.getElementById('escNotesBtns');
+        marsContainer.innerHTML = '';
+        escContainer.innerHTML = '';
+
+        marsButtons.forEach(list => {
+            const btn = document.createElement('button');
+            btn.className = 'mars-lists';
+            btn.textContent = list.label;
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                fetch(`lists/${list.action}.json`)
+                    .then(res => {
+                        if (!res.ok) throw new Error('File not found');
+                        return res.json();
+                    })
+                    .then(data => {
+                        if (Array.isArray(data)) openMarsModal(list.label, data, list.columns);
+                        else showToast('✗ Invalid data format', true);
+                    })
+                    .catch(() => {
+                        showToast(`✗ Failed to load the file for ${list.label}`, true);
+                    });
+            });
+            marsContainer.appendChild(btn);
         });
-    });
+
+        escButtons.forEach(note => {
+            const btn = document.createElement('button');
+            btn.className = 'esc-notes';
+            btn.textContent = note;
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                copyToClipboard(note);
+            });
+            escContainer.appendChild(btn);
+        });
+    } catch (err) {
+        showToast('✗ Could not load button configurations', true);
+        console.error(err);
+    }
 }
 
 // ── INIT ──
@@ -574,12 +604,11 @@ function init() {
 
     initTheme();
     document.getElementById('ot-rate').addEventListener('click', editOtRate);
-    setupMarsListsBtns();
-    setupEscNoteBtns();
+    loadListsAndNotes();
 
     document.getElementById('date-label').innerHTML = new Date().toLocaleDateString('en-US',
         { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) +
-        ' <span class="credit" title="Contact raselh to report bugs and make suggestions.">© raselh</span>';
+        ' ─ <span class="credit" title="Contact raselh to report bugs and make suggestions.">raselh</span>';
 
     document.getElementById('modalCloseBtn').addEventListener('click', closeMarsModal);
     document.getElementById('marsModal').addEventListener('click', function(e) {
@@ -589,7 +618,17 @@ function init() {
     document.getElementById('modalSearch').addEventListener('input', filterModalList);
 
     updateAll();
-    setInterval(updateAll, 10);
+
+    let lastUpdate = 0;
+    function updateLoop(timestamp) {
+        if (timestamp - lastUpdate >= 10) {
+            updateAll();
+            lastUpdate = timestamp;
+        }
+        requestAnimationFrame(updateLoop);
+    }
+    requestAnimationFrame(updateLoop);
+
     setInterval(saveData, 5000);
     window.addEventListener('beforeunload', saveData);
 }

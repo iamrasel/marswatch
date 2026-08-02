@@ -1,0 +1,7 @@
+[
+    { "label": "1000 Common Surnames", "action": "surnames", "columns": 3 },
+    { "label": "MS Whitelist", "action": "mslist", "columns": 1 },
+    { "label": "LP Whitelist", "action": "lplist", "columns": 1 },
+    { "label": "Legal Extensions", "action": "extlist", "columns": 2 },
+    { "label": "Fortune X Top 100", "action": "companies", "columns": 2 }
+]
