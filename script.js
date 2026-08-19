@@ -5,16 +5,8 @@ let prevOtAmount = 0;
 let otStartParentMs = 0;
 let modalItems = [];
 let modalFiltered = [];
-
-const DEFAULT_LABELS = [
-    "US Look Back", "US Look Forward", "EU Look Back", "EU Look Forward",
-    "Break", "Custom One", "Custom Two", "Other",
-    "US Look Back", "US Look Forward", "EU Look Back", "EU Look Forward"
-];
-const GROUP_BADGES = ["L1", "L1", "L1", "L1", "", "", "", "", "L2", "L2", "L2", "L2"];
-const CARD_COUNT = 12;
-const CUSTOM_INDICES = [5, 6];
-const TASKS_PER_HOUR = [100, 35, 60, 25, null, null, null, null, 30, 15, 20, 10];
+let cardConfig = [];
+let customIndices = [];
 
 // ── STORAGE ──
 function loadSavedData() {
@@ -31,18 +23,21 @@ function loadSavedData() {
                 frozenElapsed: Math.max(0, Math.floor(frozenElapsed)),
                 startTimestamp: wasRunning ? now : null,
                 isRunning: wasRunning,
-                customLabel: CUSTOM_INDICES.includes(i) ? (item.customLabel || DEFAULT_LABELS[i]) : undefined
+                customLabel: item.customLabel || null
             };
         });
-        while (children.length < CARD_COUNT) {
-            const i = children.length;
+
+        while (children.length < cardConfig.length) {
             children.push({
                 frozenElapsed: 0,
                 startTimestamp: null,
                 isRunning: false,
-                customLabel: CUSTOM_INDICES.includes(i) ? DEFAULT_LABELS[i] : undefined
+                customLabel: null
             });
         }
+
+        if (children.length > cardConfig.length) children = children.slice(0, cardConfig.length);
+
         if (data[0]?._ot !== undefined) {
             const ot = data[0]._ot;
             otMode = ot.mode === true;
@@ -81,7 +76,7 @@ function saveData() {
             startTimestamp: c.isRunning ? c.startTimestamp : null,
             isRunning: c.isRunning
         };
-        if (CUSTOM_INDICES.includes(i) && c.customLabel && c.customLabel !== DEFAULT_LABELS[i]) {
+        if (c.customLabel) {
             e.customLabel = c.customLabel;
         }
         if (i === 0) e._ot = {
@@ -105,7 +100,7 @@ function formatTime(ms) {
 
 function getCurrentElapsed(i) {
     const c = children[i];
-    if (!c.isRunning || !c.startTimestamp) return c.frozenElapsed || 0;
+    if (!c || !c.isRunning || !c.startTimestamp) return c ? (c.frozenElapsed || 0) : 0;
     return (c.frozenElapsed || 0) + (Date.now() - c.startTimestamp);
 }
 
@@ -116,33 +111,32 @@ function updateAll() {
     let totalMs = 0;
     let anyRunning = false;
 
-    for (let i = 0; i < CARD_COUNT; i++) {
+    for (let i = 0; i < cardConfig.length; i++) {
         const elapsed = getCurrentElapsed(i);
         totalMs += elapsed;
 
         const timeEl = document.getElementById(`time-${i}`);
         const newTime = formatTime(elapsed);
-        if (timeEl.textContent !== newTime) timeEl.textContent = newTime;
+        if (timeEl && timeEl.textContent !== newTime) timeEl.textContent = newTime;
 
         const card = document.getElementById(`card-${i}`);
-        const isRunning = children[i].isRunning;
+        if (!card) continue;
+        const isRunning = children[i] ? children[i].isRunning : false;
         card.classList.toggle('running', isRunning);
         if (isRunning) anyRunning = true;
 
-        const labelSpan = document.getElementById(`label-${i}`) || card.querySelector('.card-label');
+        const labelSpan = card.querySelector('.card-label');
         if (labelSpan) {
-            let displayLabel = DEFAULT_LABELS[i];
-            if (CUSTOM_INDICES.includes(i) && children[i].customLabel) {
+            let displayLabel = cardConfig[i].label;
+            if (customIndices.includes(i) && children[i] && children[i].customLabel) {
                 displayLabel = children[i].customLabel;
             }
             labelSpan.textContent = displayLabel;
         }
 
         const badgeSpan = card.querySelector('.group-badge');
-        const defaultLabel = DEFAULT_LABELS[i];
-        const badgeText = GROUP_BADGES[i];
-        if (isRunning && badgeText) {
-            labelSpan.textContent = `${defaultLabel} - ${badgeText}`;
+        if (isRunning && cardConfig[i].badge.length > 0) {
+            if (labelSpan) labelSpan.textContent = `${cardConfig[i].label} - ${cardConfig[i].badge}`;
             if (badgeSpan) badgeSpan.style.display = 'none';
         } else {
             if (badgeSpan) badgeSpan.style.display = '';
@@ -150,11 +144,10 @@ function updateAll() {
 
         const tasksEl = document.getElementById(`task-${i}`);
         if (tasksEl) {
-            const hours = elapsed / (60 * 60 * 1000);
-            if (hours > 0) {
+            if (cardConfig[i].tasksPerHour !== null && cardConfig[i].tasksPerHour !== undefined && elapsed > 0) {
                 tasksEl.style.display = 'inline';
-                const tasks = Math.floor(hours * TASKS_PER_HOUR[i]);
-                tasksEl.textContent = `[${tasks}]`;
+                tasksEl.textContent =
+                    `[${Math.floor((elapsed / (60 * 60 * 1000)) * cardConfig[i].tasksPerHour)}]`;
             } else tasksEl.style.display = 'none';
         }
     }
@@ -194,22 +187,22 @@ function updateAll() {
         actionBtn.classList.add('danger');
 
         rateEl.style.cursor = 'pointer';
-        rateEl.addEventListener('mouseenter', () => {
-            rateEl.style.opacity = '1';
-        });
-        rateEl.addEventListener('mouseleave', () => {
-            rateEl.style.opacity = '0.5';
-        });
+        rateEl.removeEventListener('mouseenter', rateEl._mouseenter);
+        rateEl.removeEventListener('mouseleave', rateEl._mouseleave);
+        rateEl._mouseenter = () => { rateEl.style.opacity = '1'; };
+        rateEl._mouseleave = () => { rateEl.style.opacity = '0.5'; };
+        rateEl.addEventListener('mouseenter', rateEl._mouseenter);
+        rateEl.addEventListener('mouseleave', rateEl._mouseleave);
     }
 }
 
 // ── CONTROLS ──
 function toggleChild(idx) {
     const now = Date.now();
-    for (let i = 0; i < CARD_COUNT; i++) {
+    for (let i = 0; i < cardConfig.length; i++) {
         if (i === idx) continue;
         const o = children[i];
-        if (o.isRunning && o.startTimestamp) {
+        if (o && o.isRunning && o.startTimestamp) {
             o.frozenElapsed += now - o.startTimestamp;
             o.isRunning = false;
             o.startTimestamp = null;
@@ -231,9 +224,9 @@ function toggleChild(idx) {
 function pauseAll() {
     const now = Date.now();
     let any = false;
-    for (let i = 0; i < CARD_COUNT; i++) {
+    for (let i = 0; i < cardConfig.length; i++) {
         const c = children[i];
-        if (c.isRunning && c.startTimestamp) {
+        if (c && c.isRunning && c.startTimestamp) {
             c.frozenElapsed += now - c.startTimestamp;
             c.isRunning = false;
             c.startTimestamp = null;
@@ -245,7 +238,7 @@ function pauseAll() {
 
 function resetAll() {
     if (!confirm('Reset all stopwatches?')) return;
-    children.forEach(c => { c.frozenElapsed = 0; c.isRunning = false; c.startTimestamp = null; c.customLabel = null; });
+    children.forEach(c => { if (c) { c.frozenElapsed = 0; c.isRunning = false; c.startTimestamp = null; c.customLabel = null; } });
     prevOtAmount = 0;
     otStartParentMs = 0;
     otMode = false;
@@ -258,7 +251,7 @@ function resetAll() {
 }
 
 function handleActionButton() {
-    const anyRunning = children.some(c => c.isRunning);
+    const anyRunning = children.some(c => c && c.isRunning);
     if (anyRunning) {
         pauseAll();
     } else {
@@ -268,15 +261,15 @@ function handleActionButton() {
 
 // ── RENAME LABELS ──
 function renameLabel(i) {
-    const current = children[i].customLabel || DEFAULT_LABELS[i];
-    const newLabel = prompt(`Rename the label for ${DEFAULT_LABELS[i]}:`, current);
+    const current = (children[i] && children[i].customLabel) || cardConfig[i].label;
+    const newLabel = prompt(`Rename the label for ${cardConfig[i].label}:`, current);
     if (newLabel !== null && newLabel.trim() !== '') {
-        children[i].customLabel = newLabel.trim();
+        if (children[i]) children[i].customLabel = newLabel.trim();
         saveData();
         updateAll();
         showToast(`✓ Renamed to "${newLabel.trim()}"`);
     } else if (newLabel !== null) {
-        children[i].customLabel = DEFAULT_LABELS[i];
+        if (children[i]) children[i].customLabel = null;
         saveData();
         updateAll();
         showToast('↺ Reverted to default label');
@@ -284,7 +277,7 @@ function renameLabel(i) {
 }
 
 function editOtRate() {
-    if (children.some(c => c.isRunning)) return;
+    if (children.some(c => c && c.isRunning)) return;
     const current = defaultOtRate;
     const input = prompt('Enter new OT rate (৳ per hour):', String(current));
     if (input === null) return;
@@ -363,9 +356,9 @@ function copyData() {
     pauseAll();
     const payload = children.map((c, i) => ({
         index: i,
-        label: DEFAULT_LABELS[i],
-        customLabel: CUSTOM_INDICES.includes(i) ? (c.customLabel || null) : null,
-        frozenElapsed: c.frozenElapsed || 0,
+        label: cardConfig[i].label,
+        customLabel: c ? c.customLabel : null,
+        frozenElapsed: c ? (c.frozenElapsed || 0) : 0,
         isRunning: false,
         startTimestamp: null
     }));
@@ -391,12 +384,12 @@ function applyPastedJSON(text) {
         const data = JSON.parse(text.trim());
         const entries = Array.isArray(data) ? data : (Array.isArray(data.entries) ? data.entries : []);
         const otData = Array.isArray(data) ? null : data._ot;
-        if (entries.length !== CARD_COUNT) { showToast(`✗ Expected ${CARD_COUNT} entries`, true); return; }
+        if (entries.length !== cardConfig.length) { showToast(`✗ Expected ${cardConfig.length} entries`, true); return; }
         const now = Date.now();
         children = entries.map((item, i) => {
             const fe = typeof item.frozenElapsed === 'number' ? Math.max(0, Math.floor(item.frozenElapsed)) : 0;
             const wr = item.isRunning === true;
-            const cl = CUSTOM_INDICES.includes(i) ? (item.customLabel || DEFAULT_LABELS[i]) : undefined;
+            const cl = item.customLabel || null;
             return { frozenElapsed: fe, startTimestamp: wr ? now : null, isRunning: wr, customLabel: cl };
         });
         if (otData) {
@@ -557,14 +550,92 @@ async function loadListsAndNotes() {
     }
 }
 
+function buildCards(cards) {
+    const grid = document.getElementById('cardGrid');
+    grid.innerHTML = '';
+
+    cards.forEach((card, index) => {
+        const cardDiv = document.createElement('div');
+        cardDiv.id = `card-${index}`;
+        cardDiv.className = `card group-${card.group}`;
+        cardDiv.dataset.index = index;
+
+        if (card.badge && card.badge.length > 0) {
+            const badgeSpan = document.createElement('span');
+            badgeSpan.className = 'group-badge';
+            badgeSpan.textContent = card.badge;
+            cardDiv.appendChild(badgeSpan);
+        }
+
+        const dot = document.createElement('div');
+        dot.className = 'dot';
+        cardDiv.appendChild(dot);
+
+        const labelWrapper = document.createElement('div');
+        labelWrapper.className = 'card-label-wrapper';
+
+        const labelSpan = document.createElement('span');
+        labelSpan.className = 'card-label';
+        labelSpan.textContent = card.label;
+        labelWrapper.appendChild(labelSpan);
+
+        if (card.customizable) {
+            const editSpan = document.createElement('span');
+            editSpan.className = 'edit-label';
+            editSpan.dataset.index = index;
+            editSpan.title = 'Rename';
+            editSpan.textContent = '✎';
+            editSpan.addEventListener('click', (e) => {
+                e.stopPropagation();
+                renameLabel(index);
+            });
+            labelWrapper.appendChild(editSpan);
+            customIndices.push(index);
+        }
+
+        cardDiv.appendChild(labelWrapper);
+
+        if (card.tasksPerHour !== null && card.tasksPerHour !== undefined) {
+            const taskSpan = document.createElement('span');
+            taskSpan.className = 'task-count';
+            taskSpan.id = `task-${index}`;
+            taskSpan.textContent = '[0]';
+            taskSpan.style.display = 'none';
+            cardDiv.appendChild(taskSpan);
+        }
+
+        const timeDiv = document.createElement('div');
+        timeDiv.className = 'card-time';
+        timeDiv.id = `time-${index}`;
+        timeDiv.textContent = '00:00:00.00';
+        cardDiv.appendChild(timeDiv);
+
+        grid.appendChild(cardDiv);
+
+        cardDiv.addEventListener('click', function(e) {
+            if (e.target.closest('.edit-label')) return;
+            toggleChild(parseInt(this.dataset.index));
+        });
+    });
+}
+
 // ── INIT ──
-function init() {
+async function init() {
+    try {
+        const response = await fetch('lists/cards.json');
+        if (!response.ok) throw new Error('Failed to load cards.json');
+        cardConfig = await response.json();
+    } catch (_) {
+        showToast('✗ Could not load cards.json', true);
+        return;
+    }
+
     if (!loadSavedData()) {
-        children = Array(CARD_COUNT).fill(null).map((_, i) => ({
+        children = Array(cardConfig.length).fill(null).map(() => ({
             frozenElapsed: 0,
             startTimestamp: null,
             isRunning: false,
-            customLabel: CUSTOM_INDICES.includes(i) ? DEFAULT_LABELS[i] : undefined
+            customLabel: null
         }));
         defaultOtRate = 250;
         prevOtAmount = 0;
@@ -572,17 +643,7 @@ function init() {
         otMode = false;
     }
 
-    for (let i = 0; i < CARD_COUNT; i++) {
-        document.getElementById(`card-${i}`).addEventListener('click', () => toggleChild(i));
-    }
-
-    document.querySelectorAll('.edit-label').forEach(el => {
-        el.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const idx = parseInt(el.dataset.index, 10);
-            renameLabel(idx);
-        });
-    });
+    buildCards(cardConfig);
 
     const cb = document.getElementById('ot-checkbox');
     cb.checked = otMode;

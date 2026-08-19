@@ -1,0 +1,86 @@
+[
+    {
+        "label": "US Look Back",
+        "group": "a",
+        "badge": "L1",
+        "tasksPerHour": 100,
+        "customizable": false
+    },
+    {
+        "label": "US Look Forward",
+        "group": "a",
+        "badge": "L1",
+        "tasksPerHour": 35,
+        "customizable": false
+    },
+    {
+        "label": "EU Look Back",
+        "group": "a",
+        "badge": "L1",
+        "tasksPerHour": 60,
+        "customizable": false
+    },
+    {
+        "label": "EU Look Forward",
+        "group": "a",
+        "badge": "L1",
+        "tasksPerHour": 25,
+        "customizable": false
+    },
+    {
+        "label": "Break",
+        "group": "other",
+        "badge": "",
+        "tasksPerHour": null,
+        "customizable": false
+    },
+    {
+        "label": "Custom One",
+        "group": "other",
+        "badge": "",
+        "tasksPerHour": null,
+        "customizable": true
+    },
+    {
+        "label": "Custom Two",
+        "group": "other",
+        "badge": "",
+        "tasksPerHour": null,
+        "customizable": true
+    },
+    {
+        "label": "Other",
+        "group": "other",
+        "badge": "",
+        "tasksPerHour": null,
+        "customizable": false
+    },
+    {
+        "label": "US Look Back",
+        "group": "b",
+        "badge": "L2",
+        "tasksPerHour": 30,
+        "customizable": false
+    },
+    {
+        "label": "US Look Forward",
+        "group": "b",
+        "badge": "L2",
+        "tasksPerHour": 15,
+        "customizable": false
+    },
+    {
+        "label": "EU Look Back",
+        "group": "b",
+        "badge": "L2",
+        "tasksPerHour": 20,
+        "customizable": false
+    },
+    {
+        "label": "EU Look Forward",
+        "group": "b",
+        "badge": "L2",
+        "tasksPerHour": 10,
+        "customizable": false
+    }
+]
