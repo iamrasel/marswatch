@@ -1,0 +1,18 @@
+[
+    {
+        "company": "Walmart",
+        "availability": "US, Global"
+    },
+    {
+        "company": "Wells Fargo & Co",
+        "availability": "US, Global, Top 100"
+    },
+    {
+        "company": "Saudi Aramco",
+        "availability": "Global"
+    },
+    {
+        "company": "Rest of the list",
+        "availability": "Will be added soon"
+    }
+]

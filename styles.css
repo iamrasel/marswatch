@@ -757,6 +757,30 @@ body:not(.dark) .theme-btn .moon-icon {
     font-weight: 400;
 }
 
+.modal-table {
+    display: grid;
+    width: 100%;
+    column-gap: 20px;
+}
+
+.modal-table-header, .modal-table-row { display: contents; }
+
+.modal-table-header .modal-cell {
+    position: sticky;
+    top: 0;
+    background: var(--surface-a);
+    z-index: 10;
+    padding: 8px 10px;
+    text-align: center;
+    font-size: 0.80rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text);
+    font-weight: bold;
+    border-radius: 4px;
+    border: solid transparent;
+}
+
 .modal-list {
     flex: 1;
     overflow-y: auto;
@@ -765,9 +789,11 @@ body:not(.dark) .theme-btn .moon-icon {
     column-gap: 20px;
 }
 
-.modal-list .item {
+.modal-list .item,
+.modal-table-row .modal-cell {
     padding: 8px 10px;
     border-bottom: 1px solid var(--border);
+    border-radius: 4px;
     font-size: 0.85rem;
     text-align: center;
     transition: background 0.1s;
@@ -775,7 +801,10 @@ body:not(.dark) .theme-btn .moon-icon {
     break-inside: avoid;
 }
 
-.modal-list .item:hover { background: var(--border); }
+.modal-list .item:hover,
+.modal-table-row:hover .modal-cell {
+    background: var(--border);
+}
 
 .modal-empty {
     display: none;

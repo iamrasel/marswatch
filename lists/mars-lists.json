@@ -1,5 +1,19 @@
 [
-    { "label": "1000 Common Surnames", "action": "surnames", "columns": 3 },
-    { "label": "Legal Extensions", "action": "extlist", "columns": 2 },
-    { "label": "Fortune X Top 100", "action": "companies", "columns": 2 }
+    {
+        "label": "1000 Common Surnames",
+        "action": "surnames",
+        "columns": 3
+    },
+    {
+        "label": "Legal Extensions",
+        "action": "extensions",
+        "columns": 2,
+        "headers": ["Extension", "Full Form"]
+    },
+    {
+        "label": "Fortune X Top 100",
+        "action": "companies",
+        "columns": 2,
+        "headers": ["Company", "Availability"]
+    }
 ]

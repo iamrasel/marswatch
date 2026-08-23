@@ -7,6 +7,7 @@ let modalItems = [];
 let modalFiltered = [];
 let cardConfig = [];
 let customIndices = [];
+let modalData = null;
 
 // ── STORAGE ──
 function loadSavedData() {
@@ -453,42 +454,115 @@ function toggleView(viewType) {
     }
 }
 
-function openMarsModal(title, items, columns) {
+function openMarsModal(marsList, items) {
     const overlay = document.getElementById('marsModal');
-    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalTitle').textContent = marsList.label;
+
+    modalData = {
+        type: marsList.action,
+        columnCount: marsList.columns,
+        headers: marsList.headers,
+        items: Array.isArray(items) ? items : []
+    };
+    
     modalItems = Array.isArray(items) ? items : [];
     modalFiltered = [...modalItems];
-    document.getElementById('modalList').style.columnCount = columns;
-    renderModalList();
     document.getElementById('modalSearch').value = '';
     document.getElementById('modalCount').textContent = modalFiltered.length;
     overlay.classList.add('active');
     setTimeout(() => document.getElementById('modalSearch').focus(), 100);
+    renderModalList();
 }
 
-function closeMarsModal() { document.getElementById('marsModal').classList.remove('active'); }
+function closeMarsModal() { 
+    document.getElementById('marsModal').classList.remove('active');
+    document.getElementById('modalList').style = null;
+    modalData = null;
+}
 
 function renderModalList() {
     const list = document.getElementById('modalList');
     const empty = document.getElementById('modalEmpty');
     list.innerHTML = '';
+
     if (modalFiltered.length === 0) {
         empty.classList.add('visible');
         return;
     }
     empty.classList.remove('visible');
-    modalFiltered.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'item';
-        div.textContent = item;
-        list.appendChild(div);
-    });
+
+    if (modalData && (modalData.type === 'extensions' || modalData.type === 'companies')) {
+        const table = document.createElement('div');
+        table.className = 'modal-table';
+        table.style.gridTemplateColumns = `repeat(${modalData.columnCount}, 1fr)`;
+
+        const headerRow = document.createElement('div');
+        headerRow.className = 'modal-table-header';
+
+        modalData.headers.forEach(headerText => {
+            const header = document.createElement('div');
+            header.className = 'modal-cell';
+            header.textContent = headerText;
+            headerRow.appendChild(header);
+        });
+
+        table.appendChild(headerRow);
+
+        modalFiltered.forEach(item => {
+            const row = document.createElement('div');
+            row.className = 'modal-table-row';
+
+            let cellData = [];
+            if (modalData.type === 'extensions') {
+                cellData = [item.ext || '', item.extFull || ''];
+            } else if (modalData.type === 'companies') {
+                cellData = [item.company || '', item.availability || ''];
+            }
+
+            cellData.forEach((data, index) => {
+                const cell = document.createElement('div');
+                cell.className = 'modal-cell';
+                cell.textContent = data;
+                row.appendChild(cell);
+            });
+
+            table.appendChild(row);
+        });
+
+        list.appendChild(table);
+    } else {
+        list.style.columnCount = modalData.columnCount;
+        modalFiltered.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'item';
+            div.textContent = item;
+            list.appendChild(div);
+        });
+    }
 }
 
 function filterModalList() {
-    const search = document.getElementById('modalSearch').value.toLowerCase().trim();
-    if (!search) modalFiltered = [...modalItems];
-    else modalFiltered = modalItems.filter(item => item.toLowerCase().includes(search));
+    const searchText = document.getElementById('modalSearch').value.toLowerCase().trim();
+
+    if (!searchText) {
+        modalFiltered = [...modalItems];
+    } else {
+        if (modalData && (modalData.type === 'extensions' || modalData.type === 'companies')) {
+            modalFiltered = modalItems.filter(item => {
+                let searchableText = '';
+                if (modalData.type === 'extensions') {
+                    searchableText = (item.ext || '').toLowerCase() + ' ' + (item.extFull || '').toLowerCase();
+                } else if (modalData.type === 'companies') {
+                    searchableText = (item.company || '').toLowerCase();
+                }
+                return searchableText.includes(searchText);
+            });
+        } else {
+            modalFiltered = modalItems.filter(item => 
+                String(item).toLowerCase().includes(searchText)
+            );
+        }
+    }
 
     document.getElementById('modalCount').textContent = modalFiltered.length;
     renderModalList();
@@ -524,7 +598,7 @@ async function loadListsAndNotes() {
                         return res.json();
                     })
                     .then(data => {
-                        if (Array.isArray(data)) openMarsModal(list.label, data, list.columns);
+                        if (Array.isArray(data)) openMarsModal(list, data);
                         else showToast('✗ Invalid data format', true);
                     })
                     .catch(() => {
@@ -671,11 +745,8 @@ async function init() {
         { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) +
         ' ─ <span class="credit" title="Contact raselh to report bugs and make suggestions.">raselh</span>';
 
-    document.getElementById('modalCloseBtn').addEventListener('click', closeMarsModal);
-    document.getElementById('marsModal').addEventListener('click', function(e) {
-        if (e.target === this) closeMarsModal();
-    });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMarsModal(); });
+    document.getElementById('modalCloseBtn').onclick = closeMarsModal;
+    document.getElementById('marsModal').onclick = e => e.target === e.currentTarget && closeMarsModal();
     document.getElementById('modalSearch').addEventListener('input', filterModalList);
 
     updateAll();

@@ -1,0 +1,542 @@
+[
+    {
+        "ext": "A. en P.",
+        "extFull": "Asociación en Participación"
+    },
+    {
+        "ext": "AB",
+        "extFull": "Aktiebolag"
+    },
+    {
+        "ext": "A.C.",
+        "extFull": "Asociación Civil"
+    },
+    {
+        "ext": "ACE",
+        "extFull": "Agrupamento Complementar de Empresas"
+    },
+    {
+        "ext": "AD",
+        "extFull": "Aktzionerno Druzhestvo"
+    },
+    {
+        "ext": "AE",
+        "extFull": "Anonymos Etairia"
+    },
+    {
+        "ext": "AG",
+        "extFull": "Aktiengesellschaft"
+    },
+    {
+        "ext": "AL",
+        "extFull": "Andelslag"
+    },
+    {
+        "ext": "AmbA",
+        "extFull": "Andelsselskab med begrænset ansvar"
+    },
+    {
+        "ext": "ANS",
+        "extFull": "Ansvarlig selskap"
+    },
+    {
+        "ext": "Apb",
+        "extFull": "Publikt Aktiebolag"
+    },
+    {
+        "ext": "ApS",
+        "extFull": "Anpartsselskab"
+    },
+    {
+        "ext": "K/S",
+        "extFull": "kommanditselskab"
+    },
+    {
+        "ext": "AS",
+        "extFull": "Aksjeselskap"
+    },
+    {
+        "ext": "A/S",
+        "extFull": "Aktieselskap"
+    },
+    {
+        "ext": "A.S.",
+        "extFull": "Akciova spolecnost"
+    },
+    {
+        "ext": "ASA",
+        "extFull": "Allmennaksjeselskap"
+    },
+    {
+        "ext": "AVV",
+        "extFull": "Aruba Vrijgestelde Vennootschap"
+    },
+    {
+        "ext": "AO",
+        "extFull": "Aktsionernoye obshchestvo"
+    },
+    {
+        "ext": "Bpk",
+        "extFull": "Beperk"
+    },
+    {
+        "ext": "Bt",
+        "extFull": "Beteti társaság"
+    },
+    {
+        "ext": "B.V.",
+        "extFull": "Besloten Vennootschap"
+    },
+    {
+        "ext": "BVBA",
+        "extFull": "Besloten vennootschap met beperkte aansprakelijkheid"
+    },
+    {
+        "ext": "CA",
+        "extFull": "Compania anonima"
+    },
+    {
+        "ext": "Corp.",
+        "extFull": "Corporation"
+    },
+    {
+        "ext": "C.V.",
+        "extFull": "Commanditaire Vennootschap"
+    },
+    {
+        "ext": "CVA",
+        "extFull": "Commanditaire Vennootschap op Aandelen"
+    },
+    {
+        "ext": "CVOA",
+        "extFull": "Commanditaire Vennootschap op Andelen"
+    },
+    {
+        "ext": "DA",
+        "extFull": "Selskap med delt ansar"
+    },
+    {
+        "ext": "d/b/a",
+        "extFull": "Doing Business As"
+    },
+    {
+        "ext": "d.d.",
+        "extFull": "dionicko drustvo"
+    },
+    {
+        "ext": "d.n.o.",
+        "extFull": "Druzba z neomejeno odgovornostjo"
+    },
+    {
+        "ext": "d.o.o.",
+        "extFull": "drustvo s ogranicenom odgovornoscu"
+    },
+    {
+        "ext": "EE",
+        "extFull": "Eterrorrythmos"
+    },
+    {
+        "ext": "EEG",
+        "extFull": "Eingetragene Erwerbsgesellschaft"
+    },
+    {
+        "ext": "EIRL",
+        "extFull": "Empresa Individual de Responsabilidad Limitada"
+    },
+    {
+        "ext": "ELP",
+        "extFull": "Exempted Limited Partnership"
+    },
+    {
+        "ext": "EOOD",
+        "extFull": "Ednolichno Druzhestvo s Ogranichena Otgovornost"
+    },
+    {
+        "ext": "EPE",
+        "extFull": "Etairia periorismenis evthinis"
+    },
+    {
+        "ext": "EURL",
+        "extFull": "Enterprise Unipersonnelle à Responsabilité Limitée"
+    },
+    {
+        "ext": "e.V.",
+        "extFull": "eingetragener Verein"
+    },
+    {
+        "ext": "GbR",
+        "extFull": "Gesellschaft burgerlichen Rechts"
+    },
+    {
+        "ext": "GCV",
+        "extFull": "Gewone Commanditaire Vennootschap"
+    },
+    {
+        "ext": "GesmbH",
+        "extFull": ""
+    },
+    {
+        "ext": "GIE",
+        "extFull": "Groupement d'intéret économique"
+    },
+    {
+        "ext": "GmbH & Co. KG",
+        "extFull": ""
+    },
+    {
+        "ext": "GmbH",
+        "extFull": "Gesellschaft mit beschränkter Haftung"
+    },
+    {
+        "ext": "GmbH H",
+        "extFull": "Gesellschaft mit beschränkter Haftung"
+    },
+    {
+        "ext": "HB",
+        "extFull": "Handelsbolag"
+    },
+    {
+        "ext": "hf",
+        "extFull": "Hlutafelag"
+    },
+    {
+        "ext": "IBC",
+        "extFull": "International Business Company"
+    },
+    {
+        "ext": "Inc.",
+        "extFull": "Incorporated"
+    },
+    {
+        "ext": "Inc",
+        "extFull": "Incorporated"
+    },
+    {
+        "ext": "I/S",
+        "extFull": "Interessentskab"
+    },
+    {
+        "ext": "j.t.d.",
+        "extFull": "Javno trgovacko drustvo"
+    },
+    {
+        "ext": "KA/S",
+        "extFull": "Kommanditaktieselskab"
+    },
+    {
+        "ext": "Kb",
+        "extFull": "Kommanditbolag"
+    },
+    {
+        "ext": "KD",
+        "extFull": "Komanditno drushestwo"
+    },
+    {
+        "ext": "k.d.",
+        "extFull": "komanditno drustvo"
+    },
+    {
+        "ext": "KDA",
+        "extFull": "Komanditno drushestwo s akzii"
+    },
+    {
+        "ext": "k.d.d.",
+        "extFull": "Komanditna delniska druzba"
+    },
+    {
+        "ext": "Kft",
+        "extFull": "korlátolt felelősségű társaság"
+    },
+    {
+        "ext": "KG",
+        "extFull": "Kommanditgesellschaft"
+    },
+    {
+        "ext": "KGaA",
+        "extFull": "Kommanditgesellschaft auf Aktien"
+    },
+    {
+        "ext": "KK",
+        "extFull": "Kabushiki Kaishi"
+    },
+    {
+        "ext": "Kkt",
+        "extFull": "közkereseti társaság"
+    },
+    {
+        "ext": "Kol. Srk",
+        "extFull": "Kollektiv Sirket"
+    },
+    {
+        "ext": "Kom. Srk",
+        "extFull": "Komandit Sirket"
+    },
+    {
+        "ext": "k.s.",
+        "extFull": "komanditni spolecnost"
+    },
+    {
+        "ext": "KS",
+        "extFull": "Kommandittselskap"
+    },
+    {
+        "ext": "Kv",
+        "extFull": "Közös vállalat"
+    },
+    {
+        "ext": "Ky",
+        "extFull": "Kommandiittiyhtiö"
+    },
+    {
+        "ext": "Lda",
+        "extFull": "Sociedade por Quotas Limitada"
+    },
+    {
+        "ext": "LDC",
+        "extFull": "Limited Duration Company"
+    },
+    {
+        "ext": "LLC",
+        "extFull": "Limited Liability Company"
+    },
+    {
+        "ext": "LLP",
+        "extFull": "Limited Liability Partnership"
+    },
+    {
+        "ext": "Ltd.",
+        "extFull": "Limited"
+    },
+    {
+        "ext": "Ltda",
+        "extFull": "Sociedade por Quotas de Responsabiliadade Limitada"
+    },
+    {
+        "ext": "Ltée.",
+        "extFull": "Limitée"
+    },
+    {
+        "ext": "Ν.Α.",
+        "extFull": "National Association"
+    },
+    {
+        "ext": "NT",
+        "extFull": "iNTermediary"
+    },
+    {
+        "ext": "NV",
+        "extFull": "Naamloze Vennootschap"
+    },
+    {
+        "ext": "OE",
+        "extFull": "Omorrythmos"
+    },
+    {
+        "ext": "OHG",
+        "extFull": "Offene Handelsgesellschaft"
+    },
+    {
+        "ext": "OOD",
+        "extFull": "Druzhestvo s Ogranichena Otgovornost"
+    },
+    {
+        "ext": "οϋ",
+        "extFull": "Osaühing"
+    },
+    {
+        "ext": "Oy",
+        "extFull": "Osakeyhtiö"
+    },
+    {
+        "ext": "ΟΥ]",
+        "extFull": "Julkinen osakeyhtiö"
+    },
+    {
+        "ext": "000",
+        "extFull": "Obshchestvo s ogranichennoy otvetstvennostyu"
+    },
+    {
+        "ext": "OJSC",
+        "extFull": ""
+    },
+    {
+        "ext": "P/L",
+        "extFull": "Pty. Ltd."
+    },
+    {
+        "ext": "PC Ltd",
+        "extFull": "Public Company Limited"
+    },
+    {
+        "ext": "PLC",
+        "extFull": "Public Limited Company"
+    },
+    {
+        "ext": "PMA",
+        "extFull": "Penenaman Modal Asing"
+    },
+    {
+        "ext": "PMDN",
+        "extFull": "Penanaman Modal Dalam Negeri"
+    },
+    {
+        "ext": "PrC",
+        "extFull": "Private Company limited"
+    },
+    {
+        "ext": "Prp. Ltd.",
+        "extFull": "Private company limited"
+    },
+    {
+        "ext": "PT",
+        "extFull": "Perseroan Terbuka"
+    },
+    {
+        "ext": "Pty.",
+        "extFull": "Proprietary"
+    },
+    {
+        "ext": "RAS",
+        "extFull": "Riiklik Aktsiaselts"
+    },
+    {
+        "ext": "Rt",
+        "extFull": "Részvénytársaság"
+    },
+    {
+        "ext": "S de R.L.",
+        "extFull": "Sociedad de Responsabilidad Limitada"
+    },
+    {
+        "ext": "S. en C.",
+        "extFull": "Sociedad en Comandita"
+    },
+    {
+        "ext": "S. en N.C.",
+        "extFull": "Sociedad en Nombre Colectivo"
+    },
+    {
+        "ext": "S/A",
+        "extFull": "Sociedades Anônimas"
+    },
+    {
+        "ext": "SA",
+        "extFull": "Société Anonyme"
+    },
+    {
+        "ext": "sa",
+        "extFull": "Societá"
+    },
+    {
+        "ext": "S.A.",
+        "extFull": "Sociedade por Ações"
+    },
+    {
+        "ext": "SA de CV",
+        "extFull": "Sociedad Anónima de Capital Variable"
+    },
+    {
+        "ext": "SAFI",
+        "extFull": "Sociedad Anonima Financiera de Inversion"
+    },
+    {
+        "ext": "S.A.I.C.A.",
+        "extFull": "Sociedad Anónima Inscrita de Capital Abierto"
+    },
+    {
+        "ext": "SAPA",
+        "extFull": "Societa in Accomandita per Azioni"
+    },
+    {
+        "ext": "Sarl",
+        "extFull": "Société à responsabilité limitée"
+    },
+    {
+        "ext": "SAS",
+        "extFull": "Societá in Accomandita Semplice"
+    },
+    {
+        "ext": "SC",
+        "extFull": "Société civile"
+    },
+    {
+        "ext": "S.C.",
+        "extFull": "Sociedad en commandita"
+    },
+    {
+        "ext": "SCA",
+        "extFull": "Societe en commandite par actions"
+    },
+    {
+        "ext": "SCP",
+        "extFull": "Sociedade em Conta de Participacão"
+    },
+    {
+        "ext": "SCS",
+        "extFull": "Societe en Commandite Simple"
+    },
+    {
+        "ext": "S.C.S.",
+        "extFull": "Sociedade em Comandita Simples"
+    },
+    {
+        "ext": "Sdn Bhd",
+        "extFull": "Sendirian Berhad"
+    },
+    {
+        "ext": "SENC",
+        "extFull": "Société en Nom Collectif"
+    },
+    {
+        "ext": "SGPS",
+        "extFull": "Sociedade gestora de participações socialis"
+    },
+    {
+        "ext": "SK",
+        "extFull": "Spólka komandytowa"
+    },
+    {
+        "ext": "SNC",
+        "extFull": "Société en nom collectif"
+    },
+    {
+        "ext": "SOPARFI",
+        "extFull": "Société de Participation Financiére"
+    },
+    {
+        "ext": "sp",
+        "extFull": "Societe en participation"
+    },
+    {
+        "ext": "SpA",
+        "extFull": "Società per Azioni"
+    },
+    {
+        "ext": "spol s.r.o.",
+        "extFull": "Spolecnost s rucenim omezenym"
+    },
+    {
+        "ext": "SPRL . S.R.C Spz.o.o. Srl Srl Srl Srl",
+        "extFull": "Société Privée à Responsabilité Limitée Spólka z ograniczona odpowiedzialnoscia Sociedad de responsabilidad limitada Società a Responsabilità Limitata Società a Responsabilità Limitata Società a Responsabilità Limitata Società a Responsabilità Limitata"
+    },
+    {
+        "ext": "td",
+        "extFull": "Tiha druzba"
+    },
+    {
+        "ext": "TLS",
+        "extFull": "Türk Limited Sirket"
+    },
+    {
+        "ext": "VEB",
+        "extFull": "Volkseigner Betrieb"
+    },
+    {
+        "ext": "VOF",
+        "extFull": "Vennootschap onder firma"
+    },
+    {
+        "ext": "v.o.s.",
+        "extFull": "Verejna obchodni spolecnost"
+    }
+]
