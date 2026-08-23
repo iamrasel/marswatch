@@ -49,11 +49,11 @@
         "customizable": true
     },
     {
-        "label": "Other",
+        "label": "Custom Three",
         "group": "other",
         "badge": "",
         "tasksPerHour": null,
-        "customizable": false
+        "customizable": true
     },
     {
         "label": "US Look Back",
