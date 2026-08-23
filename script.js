@@ -114,7 +114,7 @@ function updateAll() {
 
     for (let i = 0; i < cardConfig.length; i++) {
         const elapsed = getCurrentElapsed(i);
-        totalMs += elapsed;
+        if (!cardConfig[i].excludeTotal) totalMs += elapsed;
 
         const timeEl = document.getElementById(`time-${i}`);
         const newTime = formatTime(elapsed);

@@ -32,7 +32,8 @@
         "group": "other",
         "badge": "",
         "tasksPerHour": null,
-        "customizable": false
+        "customizable": false,
+        "excludeTotal": true
     },
     {
         "label": "Custom One",
