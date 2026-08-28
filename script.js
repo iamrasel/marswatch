@@ -491,7 +491,7 @@ function renderModalList() {
     }
     empty.classList.remove('visible');
 
-    if (modalData && (modalData.type === 'extensions' || modalData.type === 'companies')) {
+    if (modalData && (modalData.headers !== undefined)) {
         const table = document.createElement('div');
         table.className = 'modal-table';
         table.style.gridTemplateColumns = `repeat(${modalData.columnCount}, 1fr)`;
@@ -513,10 +513,13 @@ function renderModalList() {
             row.className = 'modal-table-row';
 
             let cellData = [];
-            if (modalData.type === 'extensions') {
-                cellData = [item.ext || '', item.extFull || ''];
-            } else if (modalData.type === 'companies') {
-                cellData = [item.company || '', item.availability || ''];
+            switch (modalData.type) {
+                case 'countries': cellData = [item.country || '', item.code || '', item.continent || ''];
+                    break;
+                case 'extensions': cellData = [item.ext || '', item.extFull || ''];
+                    break;
+                case 'companies': cellData = [item.company || '', item.availability || ''];
+                    break;
             }
 
             cellData.forEach((data, index) => {
@@ -547,13 +550,19 @@ function filterModalList() {
     if (!searchText) {
         modalFiltered = [...modalItems];
     } else {
-        if (modalData && (modalData.type === 'extensions' || modalData.type === 'companies')) {
+        if (modalData && (modalData.headers !== undefined)) {
             modalFiltered = modalItems.filter(item => {
                 let searchableText = '';
-                if (modalData.type === 'extensions') {
-                    searchableText = (item.ext || '').toLowerCase() + ' ' + (item.extFull || '').toLowerCase();
-                } else if (modalData.type === 'companies') {
-                    searchableText = (item.company || '').toLowerCase();
+                switch (modalData.type) {
+                    case 'countries':
+                        searchableText = (item.country || '').toLowerCase() + ' ' + (item.code || '').toLowerCase() + ' ' + (item.continent || '').toLowerCase();
+                        break;
+                    case 'extensions':
+                        searchableText = (item.ext || '').toLowerCase() + ' ' + (item.extFull || '').toLowerCase();
+                        break;
+                    case 'companies':
+                        searchableText = (item.company || '').toLowerCase();
+                        break;
                 }
                 return searchableText.includes(searchText);
             });

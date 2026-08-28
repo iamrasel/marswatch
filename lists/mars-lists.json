@@ -5,6 +5,12 @@
         "columns": 3
     },
     {
+        "label": "Countries",
+        "action": "countries",
+        "columns": 3,
+        "headers": ["Country", "Code", "Continent"]
+    },
+    {
         "label": "Legal Extensions",
         "action": "extensions",
         "columns": 2,
