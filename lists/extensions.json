@@ -516,8 +516,20 @@
         "extFull": "Spolecnost s rucenim omezenym"
     },
     {
-        "ext": "SPRL . S.R.C Spz.o.o. Srl Srl Srl Srl",
-        "extFull": "Société Privée à Responsabilité Limitée Spólka z ograniczona odpowiedzialnoscia Sociedad de responsabilidad limitada Società a Responsabilità Limitata Società a Responsabilità Limitata Società a Responsabilità Limitata Società a Responsabilità Limitata"
+        "ext": "SPRL",
+        "extFull": "Société Privée à Responsabilité Limitée"
+    },
+    {
+        "ext": "Spz.o.o.",
+        "extFull": "Spólka z ograniczona odpowiedzialnoscia"
+    },
+    {
+        "ext": "Srl",
+        "extFull": "Sociedad de responsabilidad limitada"
+    },
+    {
+        "ext": "Srl",
+        "extFull": "Società a Responsabilità Limitata"
     },
     {
         "ext": "td",
