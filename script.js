@@ -9,7 +9,7 @@ let cardConfig = [];
 let customIndices = [];
 let modalData = null;
 
-const latestCount = 1;
+const latestCount = 2;
 
 // ── STORAGE ──
 function loadSavedData() {
