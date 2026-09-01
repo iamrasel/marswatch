@@ -9,6 +9,8 @@ let cardConfig = [];
 let customIndices = [];
 let modalData = null;
 
+const latestCount = 1;
+
 // ── STORAGE ──
 function loadSavedData() {
     const saved = localStorage.getItem('marsStopwatches');
@@ -464,7 +466,8 @@ function openMarsModal(marsList, items) {
         headers: marsList.headers,
         items: Array.isArray(items) ? items : []
     };
-    
+
+    document.getElementById('modalSearchWrap').style.display = modalData.type === "changes" ? "none" : "";
     modalItems = Array.isArray(items) ? items : [];
     modalFiltered = [...modalItems];
     document.getElementById('modalSearch').value = '';
@@ -482,14 +485,25 @@ function closeMarsModal() {
 
 function renderModalList() {
     const list = document.getElementById('modalList');
-    const empty = document.getElementById('modalEmpty');
+    const emptyInfo = document.getElementById('modalEmptyInfo');
     list.innerHTML = '';
 
-    if (modalFiltered.length === 0) {
-        empty.classList.add('visible');
-        return;
+    const showEmptyInfo = modalData.type === 'changes' || modalFiltered.length === 0;
+    emptyInfo.classList.toggle('visible', showEmptyInfo);
+
+    if (showEmptyInfo) {
+        if (modalFiltered.length === 0) {
+            emptyInfo.textContent = "Your search query doesn't match with any item.";
+            return;
+        } else {
+            emptyInfo.innerHTML =
+                'Developer: ' +
+                '<a class="links" target="_blank" href="https://github.com/iamrasel">Md Rasel Hossain (raselh)</a></br>' +
+                'Special Mention: ' +
+                '<a class="links" target="_blank" href="https://github.com/dev-ruman">Syfur Rahman Ruman (srruman)</a>, ' +
+                '<a class="links" target="_blank" href="https://icons.getbootstrap.com">Bootstrap Icons</a>';
+        }
     }
-    empty.classList.remove('visible');
 
     if (modalData && (modalData.headers !== undefined)) {
         const table = document.createElement('div');
@@ -535,10 +549,20 @@ function renderModalList() {
         list.appendChild(table);
     } else {
         list.style.columnCount = modalData.columnCount;
-        modalFiltered.forEach(item => {
+        modalFiltered.forEach((item, index) => {
             const div = document.createElement('div');
             div.className = 'item';
-            div.textContent = item;
+            if (modalData.type === 'changes') {
+                div.classList.add('changes-item');
+                div.textContent = `${modalFiltered.length - index}. ${item}`;
+                if (modalItems.indexOf(item) >= 0 && modalItems.indexOf(item) < latestCount) {
+                    const badge = document.createElement('span');
+                    badge.className = 'latest-badge';
+                    badge.textContent = 'LATEST';
+                    div.appendChild(badge);
+                }
+            } else div.textContent = item;
+
             list.appendChild(div);
         });
     }
@@ -601,18 +625,7 @@ async function loadListsAndNotes() {
             btn.textContent = list.label;
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();
-                fetch(`lists/${list.action}.json`)
-                    .then(res => {
-                        if (!res.ok) throw new Error('File not found');
-                        return res.json();
-                    })
-                    .then(data => {
-                        if (Array.isArray(data)) openMarsModal(list, data);
-                        else showToast('✗ Invalid data format', true);
-                    })
-                    .catch(() => {
-                        showToast(`✗ Failed to load the file for ${list.label}`, true);
-                    });
+                fetchJSON(list)
             });
             marsContainer.appendChild(btn);
         });
@@ -631,6 +644,21 @@ async function loadListsAndNotes() {
         showToast('✗ Could not load button configurations', true);
         console.error(err);
     }
+}
+
+function fetchJSON(modalConfig) {
+    fetch(`lists/${modalConfig.action}.json`)
+        .then(res => {
+            if (!res.ok) throw new Error('File not found');
+            return res.json();
+        })
+        .then(data => {
+            if (Array.isArray(data)) openMarsModal(modalConfig, data);
+            else showToast('✗ Invalid data format', true);
+        })
+        .catch(() => {
+            showToast(`✗ Failed to load the file for ${modalConfig.label}`, true);
+        });
 }
 
 function buildCards(cards) {
@@ -754,8 +782,11 @@ async function init() {
         { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) +
         ' ─ <span class="credit" title="Contact raselh to report bugs and make suggestions.">raselh</span>';
 
+    document.getElementById('changesHistoryBtn').onclick = () => fetchJSON({ label: "Changes History", action: "changes", columns: 1 });
     document.getElementById('modalCloseBtn').onclick = closeMarsModal;
-    document.getElementById('marsModal').onclick = e => e.target === e.currentTarget && closeMarsModal();
+    document.getElementById('marsModal').onclick = function(e) {
+        if (e.target === e.currentTarget) closeMarsModal();
+    };
     document.getElementById('modalSearch').addEventListener('input', filterModalList);
 
     updateAll();

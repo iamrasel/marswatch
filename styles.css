@@ -366,8 +366,8 @@ body:not(.dark) .theme-btn .moon-icon {
 }
 
 .date-label { text-transform: uppercase; }
-.credit { transition: color 0.3s ease; }
-.credit:hover { color: var(--accent); }
+.credit, .links { transition: color 0.3s ease; }
+.credit:hover, .links:hover { color: var(--accent); }
 
 /* ----- RIGHT SIDEBAR ----- */
 .rail-right {
@@ -801,21 +801,38 @@ body:not(.dark) .theme-btn .moon-icon {
     break-inside: avoid;
 }
 
+.modal-list .item.changes-item { text-align: left; }
+
+.modal-list .item.changes-item .latest-badge {
+    margin-left: 8px;
+    padding: 2px 6px;
+    font-size: 0.65rem;
+    font-weight: bold;
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 15%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+    border-radius: 4px;
+}
+
 .modal-list .item:hover,
 .modal-table-row:hover .modal-cell {
     background: var(--border);
 }
 
-.modal-empty {
+.modal-empty-info {
     display: none;
     text-align: center;
     color: var(--muted);
     padding: 40px 0;
     font-size: 0.9rem;
-    font-style: italic;
 }
 
-.modal-empty.visible { display: block; }
+.modal-empty-info.visible { display: block; }
+
+.links {
+    color: var(--muted);
+    text-decoration: none;
+}
 
 .modal-list::-webkit-scrollbar { width: 6px; }
 .modal-list::-webkit-scrollbar-track { background: transparent; }
