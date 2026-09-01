@@ -343,9 +343,11 @@ body:not(.dark) .theme-btn .moon-icon {
     color: var(--text);
     cursor: pointer;
     transition: all 0.2s;
-    text-align: left;
     width: 100%;
 }
+
+.esc-notes { text-align: left; }
+.mars-lists { text-transform: uppercase; }
 
 .mars-lists:hover,
 .esc-notes:hover {
@@ -445,7 +447,7 @@ body:not(.dark) .theme-btn .moon-icon {
     border-color: var(--accent);
     color: var(--accent);
     background: var(--btn-hover-bg);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 30%, transparent);
+    animation: pulse 2s infinite;
 }
 
 /* ----- CHILD STOPWATCHES ----- */
