@@ -8,8 +8,9 @@ let modalFiltered = [];
 let cardConfig = [];
 let customIndices = [];
 let modalData = null;
+let settingsState = {};
 
-const latestCount = 3;
+const latestCount = 1;
 
 // ── STORAGE ──
 function loadSavedData() {
@@ -88,6 +89,7 @@ function saveData() {
         return e;
     });
     localStorage.setItem('marsStopwatches', JSON.stringify(saved));
+    localStorage.setItem('marsSettings', JSON.stringify(settingsState));
 }
 
 // ── FORMAT ──
@@ -109,14 +111,30 @@ function getCurrentElapsed(i) {
 
 function getTakaPerMs() { return defaultOtRate / (60 * 60 * 1000); }
 
+function getParentTotalMs() {
+    let totalMs = 0;
+    for (let i = 0; i < cardConfig.length; i++) {
+        if (settingsState.includeBreak || !cardConfig[i].excludeTotal) totalMs += getCurrentElapsed(i);
+    }
+    return totalMs;
+}
+
+function getOtTotalMs() {
+    let totalMs = 0;
+    for (let i = 0; i < cardConfig.length; i++) {
+        if (cardConfig[i].excludeTotal) continue;
+        totalMs += getCurrentElapsed(i);
+    }
+    return totalMs;
+}
+
 // ── RENDER ──
 function updateAll() {
-    let totalMs = 0;
+    const totalMs = getParentTotalMs();
     let anyRunning = false;
 
     for (let i = 0; i < cardConfig.length; i++) {
         const elapsed = getCurrentElapsed(i);
-        if (!cardConfig[i].excludeTotal) totalMs += elapsed;
 
         const timeEl = document.getElementById(`time-${i}`);
         const newTime = formatTime(elapsed);
@@ -169,7 +187,7 @@ function updateAll() {
     let otAmount = prevOtAmount;
 
     if (otMode) {
-        const segmentMs = totalMs - otStartParentMs;
+        const segmentMs = getOtTotalMs() - otStartParentMs;
         if (segmentMs > 0) otAmount += segmentMs * getTakaPerMs();
 
         otValueDiv.textContent = '৳ ' + otAmount.toFixed(2);
@@ -290,7 +308,7 @@ function editOtRate() {
         return;
     }
 
-    const totalMs = children.reduce((s, _, i) => s + getCurrentElapsed(i), 0);
+    const totalMs = getOtTotalMs();
     if (otMode) {
         const segmentMs = totalMs - otStartParentMs;
         if (segmentMs > 0) prevOtAmount += segmentMs * getTakaPerMs();
@@ -368,7 +386,8 @@ function copyData() {
     const json = JSON.stringify({
         entries: payload, _ot: {
             mode: otMode, startParentMs: otStartParentMs, accrued: prevOtAmount, rate: defaultOtRate
-        }
+        },
+        _settings: settingsState
     }, null, 2);
     copyToClipboard(json);
 }
@@ -405,6 +424,14 @@ function applyPastedJSON(text) {
         } else {
             prevOtAmount = 0; otStartParentMs = 0; otMode = false;
         }
+
+        if (data._settings && typeof data._settings === 'object') {
+            settingsState = data._settings;
+            document.querySelectorAll('.settings-items').forEach(btn => {
+                btn.classList.toggle('active', settingsState[btn.dataset.id] === true);
+            });
+        }
+
         document.getElementById('ot-checkbox').checked = otMode;
         saveData();
         updateAll();
@@ -419,14 +446,17 @@ function toggleView(viewType) {
         lists: {
             viewId: 'marsListsView',
             btnId: 'marsLists',
-            otherViewId: 'escalateView',
-            otherBtnId: 'escalateToggleBtn'
+            others: ['escalateView', 'settingsView']
         },
         notes: {
             viewId: 'escalateView',
             btnId: 'escalateToggleBtn',
-            otherViewId: 'marsListsView',
-            otherBtnId: 'marsLists'
+            others: ['marsListsView', 'settingsView']
+        },
+        settings: {
+            viewId: 'settingsView',
+            btnId: 'settingsToggleBtn',
+            others: ['marsListsView', 'escalateView']
         }
     };
 
@@ -435,21 +465,29 @@ function toggleView(viewType) {
 
     const normalView = document.getElementById('normalView');
     const targetView = document.getElementById(config.viewId);
-    const otherView = document.getElementById(config.otherViewId);
     const targetBtn = document.getElementById(config.btnId);
-    const otherBtn = document.getElementById(config.otherBtnId);
 
     const isTargetActive = targetView.classList.contains('active');
+
+    config.others.forEach(id => {
+        const view = document.getElementById(id);
+        if (view && view.classList.contains('active')) view.classList.remove('active');
+    });
+
+    const otherActiveBtns = [];
+    if (config.viewId !== 'marsListsView') otherActiveBtns.push('marsLists');
+    if (config.viewId !== 'escalateView') otherActiveBtns.push('escalateToggleBtn');
+    if (config.viewId !== 'settingsView') otherActiveBtns.push('settingsToggleBtn');
+    otherActiveBtns.forEach(id => {
+        const view = document.getElementById(id);
+        if (view && view.classList.contains('active')) view.classList.remove('active');
+    });
 
     if (isTargetActive) {
         normalView.classList.remove('hidden');
         targetView.classList.remove('active');
         targetBtn.classList.remove('active');
     } else {
-        if (otherView.classList.contains('active')) {
-            otherView.classList.remove('active');
-            otherBtn.classList.remove('active');
-        }
         normalView.classList.add('hidden');
         targetView.classList.add('active');
         targetBtn.classList.add('active');
@@ -603,21 +641,32 @@ function filterModalList() {
 
 async function loadListsAndNotes() {
     try {
-        const [marsRes, escRes] = await Promise.all([
+        const [marsRes, escRes, settingsRes] = await Promise.all([
             fetch('lists/mars-lists.json'),
-            fetch('lists/esc-notes.json')
+            fetch('lists/esc-notes.json'),
+            fetch('lists/settings.json')
         ]);
 
         if (!marsRes.ok) throw new Error('Failed to load Mars Lists config');
         if (!escRes.ok) throw new Error('Failed to load Escalate Notes config');
+        if (!settingsRes.ok) throw new Error('Failed to load Settings config');
 
         const marsButtons = await marsRes.json();
         const escButtons = await escRes.json();
+        const settingsItems = await settingsRes.json();
+
+        const savedSettings = localStorage.getItem('marsSettings');
+        const parsed = savedSettings ? JSON.parse(savedSettings) : {};
+        settingsItems.forEach(item => {
+            settingsState[item.id] = parsed[item.id];
+        });
 
         const marsContainer = document.getElementById('marsListsBtns');
         const escContainer = document.getElementById('escNotesBtns');
+        const settingsContainer = document.getElementById('settingsBtns');
         marsContainer.innerHTML = '';
         escContainer.innerHTML = '';
+        settingsContainer.innerHTML = '';
 
         marsButtons.forEach(list => {
             const btn = document.createElement('button');
@@ -640,6 +689,19 @@ async function loadListsAndNotes() {
             });
             escContainer.appendChild(btn);
         });
+
+        settingsItems.forEach(obj => {
+            const btn = document.createElement('button');
+            btn.className = 'settings-items';
+            btn.dataset.id = obj.id;
+            btn.textContent = obj.title;
+            if (settingsState[obj.id] === true) btn.classList.add('active');
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                handleSettings(obj, btn);
+            });
+            settingsContainer.appendChild(btn);
+        });
     } catch (err) {
         showToast('✗ Could not load button configurations', true);
         console.error(err);
@@ -659,6 +721,12 @@ function fetchJSON(modalConfig) {
         .catch(() => {
             showToast(`✗ Failed to load the file for ${modalConfig.label}`, true);
         });
+}
+
+function handleSettings(object, btn) {
+    settingsState[object.id] = !settingsState[object.id];
+    btn.classList.toggle('active', settingsState[object.id]);
+    saveData();
 }
 
 function buildCards(cards) {
@@ -741,6 +809,20 @@ async function init() {
         return;
     }
 
+    try {
+        const settingsRes = await fetch('lists/settings.json');
+        if (settingsRes.ok) {
+            const settingsItems = await settingsRes.json();
+            const savedSettings = localStorage.getItem('marsSettings');
+            const parsed = savedSettings ? JSON.parse(savedSettings) : {};
+            settingsItems.forEach(item => {
+                settingsState[item.id] = parsed[item.id];
+            });
+        }
+    } catch (_) {
+        showToast('✗ Could not load settings.json', true);
+    }
+
     if (!loadSavedData()) {
         children = Array(cardConfig.length).fill(null).map(() => ({
             frozenElapsed: 0,
@@ -759,7 +841,7 @@ async function init() {
     const cb = document.getElementById('ot-checkbox');
     cb.checked = otMode;
     cb.addEventListener('change', () => {
-        const totalMs = children.reduce((s, _, i) => s + getCurrentElapsed(i), 0);
+        const totalMs = getOtTotalMs();
         if (cb.checked) {
             otStartParentMs = totalMs;
             otMode = true;

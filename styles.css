@@ -151,7 +151,8 @@ body:not(.dark) .theme-btn .moon-icon {
 
 .normal-view,
 .marsLists-view,
-.escalate-view {
+.escalate-view,
+.settings-view {
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -175,7 +176,8 @@ body:not(.dark) .theme-btn .moon-icon {
 }
 
 .marsLists-view,
-.escalate-view {
+.escalate-view,
+.settings-view {
     visibility: hidden;
     opacity: 0;
     transform: translateY(-20px);
@@ -183,7 +185,8 @@ body:not(.dark) .theme-btn .moon-icon {
 }
 
 .marsLists-view.active,
-.escalate-view.active {
+.escalate-view.active,
+.settings-view.active {
     visibility: visible;
     opacity: 1;
     transform: translateY(0);
@@ -312,7 +315,8 @@ body:not(.dark) .theme-btn .moon-icon {
 }
 
 .marsLists-view,
-.escalate-view {
+.escalate-view,
+.settings-view {
     flex: 1;
     display: none;
     flex-direction: column;
@@ -320,11 +324,12 @@ body:not(.dark) .theme-btn .moon-icon {
     padding-bottom: 10px;
 }
 
-.marsLists-view.active, .escalate-view.active { display: flex; }
-.marsLists-spacer, .escalate-spacer { flex: 1; }
+.marsLists-view.active, .escalate-view.active, .settings-view.active { display: flex; }
+.marsLists-spacer, .escalate-spacer, .settings-spacer { flex: 1; }
 
 .marsLists-buttons,
-.escalate-buttons {
+.escalate-buttons,
+.settings-buttons {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -332,7 +337,8 @@ body:not(.dark) .theme-btn .moon-icon {
 }
 
 .mars-lists,
-.esc-notes {
+.esc-notes,
+.settings-items {
     background: transparent;
     border: 1px solid var(--border);
     border-radius: 10px;
@@ -347,14 +353,18 @@ body:not(.dark) .theme-btn .moon-icon {
 }
 
 .esc-notes { text-align: left; }
-.mars-lists { text-transform: uppercase; }
+.mars-lists, .settings-items { text-transform: uppercase; }
 
 .mars-lists:hover,
-.esc-notes:hover {
+.esc-notes:hover,
+.settings-items:hover,
+.settings-items.active {
     border-color: var(--accent);
     background: var(--btn-hover-bg);
     transform: translateX(3px);
 }
+
+.settings-items.active { color: var(--accent); }
 
 .rail-footer {
     text-align: center;
@@ -443,7 +453,8 @@ body:not(.dark) .theme-btn .moon-icon {
 }
 
 .rail-btn#marsLists.active,
-.rail-btn#escalateToggleBtn.active {
+.rail-btn#escalateToggleBtn.active,
+.rail-btn#settingsToggleBtn.active {
     border-color: var(--accent);
     color: var(--accent);
     background: var(--btn-hover-bg);

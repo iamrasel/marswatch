@@ -1,0 +1,7 @@
+[
+    {
+        "id": "includeBreak",
+        "title": "Include break time to the parent stopwatch",
+        "defaultValue": "false"
+    }
+]
