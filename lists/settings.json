@@ -3,5 +3,10 @@
         "id": "includeBreak",
         "title": "Include break time to the parent stopwatch",
         "defaultValue": "false"
+    },
+    {
+        "id": "showL2",
+        "title": "Show level 2 stopwatches",
+        "defaultValue": "true"
     }
 ]

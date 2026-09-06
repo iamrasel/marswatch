@@ -6,11 +6,12 @@ let otStartParentMs = 0;
 let modalItems = [];
 let modalFiltered = [];
 let cardConfig = [];
+let fullCardConfig = [];
 let customIndices = [];
 let modalData = null;
 let settingsState = {};
 
-const latestCount = 1;
+const latestCount = 2;
 
 // ── STORAGE ──
 function loadSavedData() {
@@ -406,7 +407,6 @@ function applyPastedJSON(text) {
         const data = JSON.parse(text.trim());
         const entries = Array.isArray(data) ? data : (Array.isArray(data.entries) ? data.entries : []);
         const otData = Array.isArray(data) ? null : data._ot;
-        if (entries.length !== cardConfig.length) { showToast(`✗ Expected ${cardConfig.length} entries`, true); return; }
         const now = Date.now();
         children = entries.map((item, i) => {
             const fe = typeof item.frozenElapsed === 'number' ? Math.max(0, Math.floor(item.frozenElapsed)) : 0;
@@ -431,6 +431,8 @@ function applyPastedJSON(text) {
                 btn.classList.toggle('active', settingsState[btn.dataset.id] === true);
             });
         }
+
+        buildCards(settingsState.showL2 ? fullCardConfig : fullCardConfig.filter(card => card.group !== 'b'));
 
         document.getElementById('ot-checkbox').checked = otMode;
         saveData();
@@ -695,7 +697,7 @@ async function loadListsAndNotes() {
             btn.className = 'settings-items';
             btn.dataset.id = obj.id;
             btn.textContent = obj.title;
-            if (settingsState[obj.id] === true) btn.classList.add('active');
+            btn.classList.toggle('active', settingsState[obj.id]);
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 handleSettings(obj, btn);
@@ -727,9 +729,17 @@ function handleSettings(object, btn) {
     settingsState[object.id] = !settingsState[object.id];
     btn.classList.toggle('active', settingsState[object.id]);
     saveData();
+
+    if (object.id === 'showL2') {
+        cardConfig = settingsState.showL2 ? fullCardConfig : fullCardConfig.filter(card => card.group !== 'b');
+        loadSavedData();
+        buildCards(cardConfig);
+        updateAll();
+    }
 }
 
 function buildCards(cards) {
+    customIndices = [];
     const grid = document.getElementById('cardGrid');
     grid.innerHTML = '';
 
@@ -804,6 +814,7 @@ async function init() {
         const response = await fetch('lists/cards.json');
         if (!response.ok) throw new Error('Failed to load cards.json');
         cardConfig = await response.json();
+        fullCardConfig = cardConfig;
     } catch (_) {
         showToast('✗ Could not load cards.json', true);
         return;
@@ -821,6 +832,10 @@ async function init() {
         }
     } catch (_) {
         showToast('✗ Could not load settings.json', true);
+    }
+
+    if (settingsState.showL2 === false) {
+        cardConfig = cardConfig.filter(card => card.group !== 'b');
     }
 
     if (!loadSavedData()) {
