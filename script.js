@@ -11,7 +11,7 @@ let customIndices = [];
 let modalData = null;
 let settingsState = {};
 
-const latestCount = 2;
+const latestCount = 3;
 
 // ── STORAGE ──
 function loadSavedData() {
@@ -177,6 +177,13 @@ function updateAll() {
     const totalEl = document.getElementById('parent-time');
     const totalStr = formatTime(totalMs);
     if (totalEl.textContent !== totalStr) totalEl.textContent = totalStr;
+
+    if (!otMode && settingsState.autoOT && getOtTotalMs() >= 31500000) {
+        otStartParentMs = getOtTotalMs();
+        otMode = true;
+        document.getElementById('ot-checkbox').checked = true;
+        saveData();
+    }
 
     const actionBtn = document.getElementById('action-btn');
     const iconPath = document.getElementById('action-icon-path');

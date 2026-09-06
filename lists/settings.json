@@ -1,5 +1,10 @@
 [
     {
+        "id": "autoOT",
+        "title": "Automatically turn on OT Mode after hitting 8:45",
+        "defaultValue": "false"
+    },
+    {
         "id": "includeBreak",
         "title": "Include break time to the parent stopwatch",
         "defaultValue": "false"
